@@ -19,14 +19,14 @@ const getUsuarios = async (req, res) => {
     const usuarios = await pool.query('SELECT * FROM `users`')
     console.log('usuarios', usuarios)
 
-    res.json ({
+    res.json({
       ok: true,
       msg: 'getUsuarios',
       usuarios: usuarios
     })
-    
+
   } catch (error) {
-    
+
     res.sendStatus(500);
 
   }
@@ -38,7 +38,7 @@ const createUsuario = async (req, res) => {
 
   try {
 
-    const  {nombre_organizacion, email, password, image } = req.body
+    const { nombre_organizacion, email, password, image } = req.body
 
     const newUser = {
       nombre_organizacion,
@@ -49,13 +49,13 @@ const createUsuario = async (req, res) => {
     }
 
     const post = await pool.query('INSERT INTO `users` set ?', [newUser])
-    
+
     res.sendStatus(200);
-    
+
   } catch (error) {
 
     res.sendStatus(500);
-    
+
   }
 
 }
@@ -65,15 +65,15 @@ const actualizarUsuario = async (req, res) => {
 
   try {
 
-    const  { id } = req.params
-    const  {nombre_organizacion, email, password, image, enabled } = req.body
+    const { id } = req.params
+    const { nombre_organizacion, email, password, image, enabled } = req.body
 
     if (nombre_organizacion !== undefined) await pool.query('UPDATE `users` SET `nombre_organizacion` = ? WHERE `users`.`id_usuario` = ?', [nombre_organizacion, id])
-    if (email !== undefined)               await pool.query('UPDATE `users` SET `email` = ? WHERE `users`.`id_usuario` = ?',               [email, id])
-    if (password !== undefined)            await pool.query('UPDATE `users` SET `password` = ? WHERE `users`.`id_usuario` = ?',            [bcrypt.hashSync(password, salt), id])
-    if (image !== undefined)               await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?',               [image, id])
-    if (enabled !== undefined)             await pool.query('UPDATE `users` SET `enabled` = ? WHERE `users`.`id_usuario` = ?',             [enabled, id])
-    
+    if (email !== undefined) await pool.query('UPDATE `users` SET `email` = ? WHERE `users`.`id_usuario` = ?', [email, id])
+    if (password !== undefined) await pool.query('UPDATE `users` SET `password` = ? WHERE `users`.`id_usuario` = ?', [bcrypt.hashSync(password, salt), id])
+    if (image !== undefined) await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [image, id])
+    if (enabled !== undefined) await pool.query('UPDATE `users` SET `enabled` = ? WHERE `users`.`id_usuario` = ?', [enabled, id])
+
     res.sendStatus(200);
 
   } catch (error) {
@@ -89,11 +89,11 @@ const actualizarContraseña = async (req, res) => {
 
   try {
 
-    const  { id } = req.params
-    const  {password} = req.body
+    const { id } = req.params
+    const { password } = req.body
 
     if (password !== undefined) await pool.query('UPDATE `users` SET `password` = ? WHERE `users`.`id_usuario` = ?', [bcrypt.hashSync(password, salt), id])
-    
+
     res.sendStatus(200);
 
   } catch (error) {
@@ -109,16 +109,16 @@ const borrarUsuario = async (req, res) => {
 
   try {
 
-    const  { id } = req.params
+    const { id } = req.params
 
     if (id) await pool.query('DELETE FROM `users` WHERE id_usuario = ?', [id])
 
     res.sendStatus(200);
-    
+
   } catch (error) {
 
     res.sendStatus(500);
-    
+
   }
 
 }
