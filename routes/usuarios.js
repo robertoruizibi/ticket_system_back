@@ -2,7 +2,7 @@
 Importación de módulos
 */
 const { Router } = require('express');
-const { getUsuarios, createUsuario, borrarUsuario, actualizarUsuario, actualizarContraseña } = require('../controllers/usuarios');
+const { getUsuarios, createUsuario, borrarUsuario, actualizarUsuario, actualizarContraseña } = require('../controllers/users');
 const bodyParser = require('body-parser');
 var jsonParser = bodyParser.json()
 
