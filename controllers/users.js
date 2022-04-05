@@ -17,7 +17,6 @@ const getUsuarios = async (req, res) => {
   try {
 
     const usuarios = await pool.query('SELECT * FROM `users`')
-    console.log('usuarios', usuarios)
 
     res.json({
       ok: true,
@@ -27,7 +26,10 @@ const getUsuarios = async (req, res) => {
 
   } catch (error) {
 
-    res.sendStatus(500);
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: error
+    });
 
   }
 
@@ -38,23 +40,38 @@ const createUsuario = async (req, res) => {
 
   try {
 
+    const users_emails = await pool.query('SELECT email FROM `users`')
     const { nombre_organizacion, email, password, image } = req.body
 
-    const newUser = {
-      nombre_organizacion,
-      email,
-      password: bcrypt.hashSync(password, salt),
-      image: image === undefined ? '' : image,
-      enabled: true
+    let userEmailsArray = []
+    users_emails.forEach(element => {userEmailsArray.push(element.email)});
+    let emailIndex = userEmailsArray.findIndex(emailArr => emailArr === email)
+    
+    if (emailIndex === -1) {
+      const newUser = {
+        nombre_organizacion,
+        email,
+        password: bcrypt.hashSync(password, salt),
+        image: image === undefined ? '' : image,
+        enabled: true
+      }
+      const post = await pool.query('INSERT INTO `users` set ?', [newUser])
+      res.sendStatus(200);
+    }else {
+      res.status(400).send({
+        errorCode: 400,
+        errorMsg: 'Email already exists'
+      });
     }
 
-    const post = await pool.query('INSERT INTO `users` set ?', [newUser])
-
-    res.sendStatus(200);
+    
 
   } catch (error) {
 
-    res.sendStatus(500);
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: error
+    });
 
   }
 
@@ -78,7 +95,10 @@ const actualizarUsuario = async (req, res) => {
 
   } catch (error) {
 
-    res.sendStatus(500);
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: error
+    });
 
   }
 
@@ -98,7 +118,10 @@ const actualizarContraseña = async (req, res) => {
 
   } catch (error) {
 
-    res.sendStatus(500);
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: error
+    });
 
   }
 
@@ -117,7 +140,10 @@ const borrarUsuario = async (req, res) => {
 
   } catch (error) {
 
-    res.sendStatus(500);
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: error
+    });
 
   }
 
