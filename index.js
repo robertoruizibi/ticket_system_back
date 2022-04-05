@@ -10,6 +10,7 @@ const app = express();
 
 // Usar cors
 app.use(cors());  
+app.use(express.json());
 
 app.use('/users', require('./routes/usuarios'))
 
