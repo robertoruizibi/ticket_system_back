@@ -28,7 +28,7 @@ const getUsuarios = async (req, res) => {
 
     res.status(500).send({
       errorCode: 500,
-      errorMsg: "Server error"
+      errorMsg: "Error getting users"
     });
 
   }
@@ -52,7 +52,7 @@ const getUsuario = async (req, res) => {
 
     res.status(500).send({
       errorCode: 500,
-      errorMsg: "Server error"
+      errorMsg: "Error getting user"
     });
 
   }
@@ -76,7 +76,7 @@ const createUsuario = async (req, res) => {
       const post = await pool.query('INSERT INTO `users` set ?', [newUser])
       return res.status(200).send({
       ok: 200,
-      msg: "Successful"
+      msg: "User created successfully"
     });
 
   } catch (error) {
@@ -112,7 +112,7 @@ const actualizarUsuario = async (req, res) => {
 
     return res.status(200).send({
       ok: 200,
-      msg: "Successful"
+      msg: "User updated successfully"
     });
 
   } catch (error) {
@@ -138,14 +138,14 @@ const actualizarContraseña = async (req, res) => {
 
     return res.status(200).send({
       ok: 200,
-      msg: "Successful"
+      msg: "Password updated successfully"
     });
 
   } catch (error) {
 
     res.status(500).send({
       errorCode: 500,
-      errorMsg: "Server error"
+      errorMsg: "Error updating password: " + error
     });
 
   }
@@ -163,14 +163,14 @@ const borrarUsuario = async (req, res) => {
 
     return res.status(200).send({
       ok: 200,
-      msg: "Successful"
+      msg: "User deleted successfully"
     });
 
   } catch (error) {
 
     res.status(500).send({
       errorCode: 500,
-      errorMsg: "Server error"
+      errorMsg: "Error deleting user: " + error
     });
 
   }
