@@ -1,5 +1,5 @@
 /*
-Importación de módulos
+Importacion de modulos
 */
 var mysql = require('mysql');
 
