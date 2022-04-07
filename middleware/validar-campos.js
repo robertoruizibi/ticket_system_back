@@ -5,7 +5,7 @@ Importacion de modulos
 const { response } = require('express');
 const { validationResult } = require('express-validator');
 const pool = require('../database/configdb');
-const { isObjEmpty, isArrayEmpty } = require('../utils/common')
+const { isObjEmpty, checkEmailInBD } = require('../utils/common')
 
 // Comprobar con express validator si los campos existen
 const validarCampos = (req, res = response, next) => {
@@ -24,21 +24,17 @@ const validarCampos = (req, res = response, next) => {
 // Comprobar si el email que se esta intentando registrar ya existe
 const checkEmailexists = async (req, res = response, next) => {
 
-  const users_emails = await pool.query('SELECT email FROM `users`')
   const { email } = req.body
 
-  let userEmailsArray = []
-  users_emails.forEach(element => {userEmailsArray.push(element.email)});
-  let emailIndex = userEmailsArray.findIndex(emailArr => emailArr === email)
+  let emailExists = await checkEmailInBD(email)
 
-  if (emailIndex === -1) {
-    next();
-  }else {
+  if (emailExists) {
     return res.status(400).send({
       errorCode: 400,
       errorMsg: "Email already exists"
     });
   }
+  next();
 
 }
 
