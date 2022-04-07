@@ -6,7 +6,6 @@ const { getUsuarios, getUsuario, createUsuario, borrarUsuario, actualizarUsuario
 const bodyParser = require('body-parser');
 const { check } = require('express-validator')
 const { validarCampos, checkEmailexists, checkUserExists } = require('../middleware/validar-campos')
-var jsonParser = bodyParser.json()
 
 // Crear router
 const router = Router();
@@ -29,13 +28,14 @@ router.put('/:id', [
   check('email', 'El argumento email es obligatorio').not().isEmpty(),
   check('password', 'El argumento password es obligatorio').not().isEmpty(),
   check('enabled', 'El argumento enabled es obligatorio').not().isEmpty(),
-  check('id_usuario', 'El identificador no es válido').isNumeric(),
-  [validarCampos],
+  check('id', 'El identificador no es válido').isNumeric(),
+  [validarCampos, checkUserExists],
   ],actualizarUsuario);
+
 router.put('/change_password/:id', [
   check('password', 'El argumento password es obligatorio').not().isEmpty(),
-  check('id_usuario', 'El identificador no es válido').isNumeric(),
-  validarCampos
+  check('id', 'El identificador no es válido').isNumeric(),
+  [validarCampos, checkUserExists]
   ], actualizarContraseña);
 
 // DELETE
