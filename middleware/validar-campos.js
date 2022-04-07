@@ -25,7 +25,7 @@ const validarCampos = (req, res = response, next) => {
 const checkEmailexists = async (req, res = response, next) => {
 
   const users_emails = await pool.query('SELECT email FROM `users`')
-  const { nombre_organizacion, email, password, image } = req.body
+  const { email } = req.body
 
   let userEmailsArray = []
   users_emails.forEach(element => {userEmailsArray.push(element.email)});
@@ -59,4 +59,20 @@ const checkUserExists = async (req, res = response, next) => {
 
 }
 
-module.exports = { validarCampos, checkEmailexists, checkUserExists }
+const checkCompanyRol = async (req, res = response, next) => {
+
+  const { id } = req.params
+  const rol = await pool.query('SELECT `rol` FROM `users` WHERE id_usuario = ?', [id])
+
+  if (rol && rol === 'empresa') {
+    next();
+  }else {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "This user is not Company Rol"
+    });
+  }
+
+}
+
+module.exports = { validarCampos, checkEmailexists, checkUserExists, checkCompanyRol }

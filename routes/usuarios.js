@@ -26,10 +26,10 @@ router.post('/', [
 router.put('/:id', [
   check('nombre_organizacion', 'El argumento nombre_organizacion es obligatorio').not().isEmpty(),
   check('email', 'El argumento email es obligatorio').not().isEmpty(),
-  check('password', 'El argumento password es obligatorio').not().isEmpty(),
+  // check('password', 'El argumento password es obligatorio').not().isEmpty(),
   check('enabled', 'El argumento enabled es obligatorio').not().isEmpty(),
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarCampos, checkUserExists],
+  [validarCampos, checkUserExists, checkEmailexists],
   ],actualizarUsuario);
 
 router.put('/change_password/:id', [
