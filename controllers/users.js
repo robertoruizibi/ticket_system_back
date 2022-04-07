@@ -7,10 +7,6 @@ var bcrypt = require('bcryptjs');
 // Create salt for hashing passwords
 var salt = bcrypt.genSaltSync(10);
 
-// Load hash from your password DB.
-// bcrypt.compareSync("B4c0/\/", hash); // true
-// bcrypt.compareSync("not_bacon", hash); // false
-
 // GET
 const getUsuarios = async (req, res) => {
 
@@ -18,11 +14,11 @@ const getUsuarios = async (req, res) => {
 
     const usuarios = await pool.query('SELECT * FROM `users`')
 
-    res.json({
-      ok: true,
+    res.status(200).send({
+      ok: 200,
       msg: 'getUsuarios',
       usuarios: usuarios
-    })
+    });
 
   } catch (error) {
 
@@ -42,11 +38,11 @@ const getUsuario = async (req, res) => {
     const { id } = req.params
     const usuario = await pool.query('SELECT * FROM `users` WHERE id_usuario = ?', [id])
 
-    res.json({
-      ok: true,
+    res.status(200).send({
+      ok: 200,
       msg: 'getUsuario',
       usuarios: usuario
-    })
+    });
 
   } catch (error) {
 
@@ -74,10 +70,10 @@ const createUsuario = async (req, res) => {
         enabled: true
       }
       const post = await pool.query('INSERT INTO `users` set ?', [newUser])
-      return res.status(200).send({
-      ok: 200,
-      msg: "User created successfully"
-    });
+      res.status(200).send({
+        ok: 200,
+        msg: "User created successfully"
+      });
 
   } catch (error) {
 
@@ -110,7 +106,7 @@ const actualizarUsuario = async (req, res) => {
     }
     await pool.query('UPDATE `users` SET `enabled` = ? WHERE `users`.`id_usuario` = ?', [enabled, id])
 
-    return res.status(200).send({
+    res.status(200).send({
       ok: 200,
       msg: "User updated successfully"
     });
