@@ -2,19 +2,29 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-const { getUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser } = require('../utils/dbCalls')
+const { getUsers, getNumUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser } = require('../utils/dbCalls')
 
 // GET
 const getUsuarios = async (req, res) => {
 
   try {
 
-    const usuarios = await getUsers()
+    const desde = Number(req.query.desde) || 0;
+    const registropp = 10;
+    const [usuarios, total] = await Promise.all([
+      getUsers(desde, registropp),
+      getNumUsers()
+  ]);
 
     res.status(200).send({
       ok: 200,
       msg: 'getUsuarios',
-      usuarios: usuarios
+      usuarios: usuarios,
+      page: {
+          desde,
+          registropp,
+          total
+      }
     });
 
   } catch (error) {

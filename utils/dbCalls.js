@@ -32,8 +32,12 @@ const getUserData = async (id) => {
   return queryResultToObject(await pool.query('SELECT * FROM `users` WHERE id_usuario = ?', [id]))
 }
 
-const getUsers = async () => {
-  return queryResultToObject(await pool.query('SELECT * FROM `users`'))
+const getUsers = async (desde = 0, registropp = 10) => {
+  return await pool.query('SELECT * FROM `users` LIMIT ? , ?', [desde, registropp])
+}
+
+const getNumUsers = async () => {
+  return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `users`'))
 }
 
 const getSignleUser = async (id) => {
@@ -71,4 +75,4 @@ const deleteUser = async (id) => {
   pool.query('DELETE FROM `users` WHERE id_usuario = ?', [id])
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser }
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser }
