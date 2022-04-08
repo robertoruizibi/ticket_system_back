@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const { response } = require('express');
-const { checkEmailInBD, checkPasswordInBD, getUserData } = require('../utils/dbCalls')
+const { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail } = require('../utils/dbCalls')
 const { generarJWT } = require('../helpers/jwt')
 
 // Create salt for hashing passwords
@@ -33,7 +33,7 @@ const login = async(req, res = response) => {
     }
 
     // Generating JWT token
-    let {id_usuario, rol} = await getUserData(email)
+    let {id_usuario, rol} = await getUserDataFromEmail(email)
     const token = await generarJWT(id_usuario, rol);
 
     // Everything ok, responde 200
