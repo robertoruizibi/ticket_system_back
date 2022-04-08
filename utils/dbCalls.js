@@ -3,7 +3,7 @@ Importacion de modulos
 */
 const pool = require('../database/configdb');
 const bcrypt = require('bcryptjs');
-const { getFirstQueryValue } = require('./common')
+const { getFirstQueryValue, queryResultToObject } = require('./common')
 
 //---------------------------------------------------------------//
 //                         LOGIN QUERIES                         //
@@ -19,6 +19,11 @@ const checkPasswordInBD = async (password, email) => {
   const user_password = await pool.query('SELECT password FROM `users` WHERE email = ?', [email])
   return bcrypt.compareSync(password, getFirstQueryValue(user_password));
 }
+
+const getUserData = async (paramEemail) => {
+  let call = await pool.query('SELECT * FROM `users` WHERE email = ?', [paramEemail])
+  return queryResultToObject(call)
+}
 //---------------------------------------------------------------//
 
-module.exports = { checkEmailInBD, checkPasswordInBD }
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserData }
