@@ -2,11 +2,7 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-var bcrypt = require('bcryptjs');
 const { getUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser } = require('../utils/dbCalls')
-
-// Create salt for hashing passwords
-// var salt = bcrypt.genSaltSync(10);
 
 // GET
 const getUsuarios = async (req, res) => {
