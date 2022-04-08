@@ -20,7 +20,7 @@ router.post('/', [
   check('nombre_organizacion', 'El argumento nombre_organizacion es obligatorio').not().isEmpty(),
   check('email', 'El argumento email es obligatorio').not().isEmpty(),
   check('password', 'El argumento password es obligatorio').not().isEmpty(),
-  [validarCampos, checkEmailexists, validarJWT],
+  [validarJWT, validarCampos, checkEmailexists],
 ], createUsuario);
 
 // PUT
@@ -30,19 +30,19 @@ router.put('/:id', [
   // check('password', 'El argumento password es obligatorio').not().isEmpty(),
   check('enabled', 'El argumento enabled es obligatorio').not().isEmpty(),
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarCampos, checkUserExists, checkEmailExistsPUT, validarJWT],
+  [validarJWT, validarCampos, checkUserExists, checkEmailExistsPUT],
 ],actualizarUsuario);
 
 router.put('/change_password/:id', [
   check('password', 'El argumento password es obligatorio').not().isEmpty(),
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarCampos, checkUserExists, validarJWT]
+  [validarJWT, validarCampos, checkUserExists]
 ], actualizarContraseña);
 
 // DELETE
 router.delete('/:id',[
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarCampos, checkUserExists, validarJWT]
+  [validarJWT, validarCampos, checkUserExists]
 ], borrarUsuario);
 
 module.exports = router;
