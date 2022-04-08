@@ -5,7 +5,7 @@ const generarJWT = (uid, rol) => {
       uid,
       rol
     }
-    jwt.sign(payload, 'miclavesecreta', {
+    jwt.sign(payload, process.env.JWTSECRET, {
       expiresIn: '24h'
     }, (err, token) => {
       if (err) {
