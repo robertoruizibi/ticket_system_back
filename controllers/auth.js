@@ -3,6 +3,7 @@ Importacion de modulos
 */
 const { response } = require('express');
 const { checkEmailInBD, checkPasswordInBD } = require('../utils/common')
+const { generarJWT } = require('../helpers/jwt')
 
 // Create salt for hashing passwords
 
@@ -31,6 +32,9 @@ const login = async(req, res = response) => {
         errorMsg: 'Email or password are not correct',
       });
     }
+
+     // Generating JWT token
+    // const token = await generarJWT(usuarioBD._id, usuarioBD.rol);
 
     // Everything ok, responde 200
     res.status(200).send({
