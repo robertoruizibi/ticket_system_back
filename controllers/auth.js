@@ -25,7 +25,6 @@ const login = async(req, res = response) => {
 
     // Check if password is same in BD
     const validPassword = await checkPasswordInBD(password, email)
-    console.log('validPassword', validPassword);
     if (!validPassword) {
       return res.status(400).json({
         errorCode: 400,
@@ -36,8 +35,6 @@ const login = async(req, res = response) => {
     // Generating JWT token
     let {id_usuario, rol} = await getUserData(email)
     const token = await generarJWT(id_usuario, rol);
-    console.log('id_usuario', id_usuario);
-    console.log('rol', rol);
 
     // Everything ok, responde 200
     res.status(200).send({
