@@ -3,11 +3,11 @@ Importacion de modulos
 */
 const pool = require('../database/configdb');
 const bcrypt = require('bcryptjs');
-const _ = require("lodash");
+const { getFirstQueryValue } = require('./common')
 
 //---------------------------------------------------------------//
-const getFirstQueryValue = (value) => { return Object.values(value[0])[0] }
-
+//                         LOGIN QUERIES                         //
+//---------------------------------------------------------------//
 const checkEmailInBD = async (email) => {
   const users_emails = await pool.query('SELECT email FROM `users`')
   let userEmailsArray = []
