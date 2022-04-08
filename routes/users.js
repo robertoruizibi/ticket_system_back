@@ -5,7 +5,7 @@ const { Router } = require('express');
 const { getUsuarios, getUsuario, createUsuario, borrarUsuario, actualizarUsuario, actualizarContraseña } = require('../controllers/users');
 const bodyParser = require('body-parser');
 const { check } = require('express-validator')
-const { validarCampos, checkEmailexists, checkUserExists } = require('../middleware/validar-campos')
+const { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists } = require('../middleware/validar-campos')
 const { validarJWT } = require('../middleware/validar-jwt')
 
 // Crear router
@@ -30,7 +30,7 @@ router.put('/:id', [
   // check('password', 'El argumento password es obligatorio').not().isEmpty(),
   check('enabled', 'El argumento enabled es obligatorio').not().isEmpty(),
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarCampos, checkUserExists, checkEmailexists, validarJWT],
+  [validarCampos, checkUserExists, checkEmailExistsPUT, validarJWT],
 ],actualizarUsuario);
 
 router.put('/change_password/:id', [
