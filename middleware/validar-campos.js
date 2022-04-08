@@ -47,15 +47,11 @@ const checkEmailExistsPUT = async (req, res = response, next) => {
   let emailExists = await checkEmailInBD(email)
   let emailGet = await getUserData(id)
 
-  console.log('emailExists', emailExists);
-  console.log('email', email);
-  console.log('emailGet', emailGet.email)
-
   if (emailExists) {
     if (email !== emailGet.email) {
       return res.status(400).send({
         errorCode: 400,
-        errorMsg: "Email exists but is not yours"
+        errorMsg: "Email already exists"
       });
     }
   }
