@@ -3,16 +3,17 @@ Importacion de modulos
 */
 const pool = require('../database/configdb');
 var bcrypt = require('bcryptjs');
+const { getUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser } = require('../utils/dbCalls')
 
 // Create salt for hashing passwords
-var salt = bcrypt.genSaltSync(10);
+// var salt = bcrypt.genSaltSync(10);
 
 // GET
 const getUsuarios = async (req, res) => {
 
   try {
 
-    const usuarios = await pool.query('SELECT * FROM `users`')
+    const usuarios = await getUsers()
 
     res.status(200).send({
       ok: 200,
@@ -36,7 +37,7 @@ const getUsuario = async (req, res) => {
   try {
 
     const { id } = req.params
-    const usuario = await pool.query('SELECT * FROM `users` WHERE id_usuario = ?', [id])
+    const usuario = await getSignleUser(id)
 
     res.status(200).send({
       ok: 200,
@@ -60,20 +61,13 @@ const createUsuario = async (req, res) => {
 
   try {
 
-    const { nombre_organizacion, email, password, image, enabled } = req.body
+    const data = req.body
 
-      const newUser = {
-        nombre_organizacion,
-        email,
-        password: bcrypt.hashSync(password, salt),
-        image: image === undefined ? '/img/default.jpg' : image,
-        enabled: true
-      }
-      const post = await pool.query('INSERT INTO `users` set ?', [newUser])
-      res.status(200).send({
-        ok: 200,
-        msg: "User created successfully"
-      });
+    const post = await createUser(data)
+    res.status(200).send({
+      ok: 200,
+      msg: "User created successfully"
+    });
 
   } catch (error) {
 
@@ -92,19 +86,9 @@ const actualizarUsuario = async (req, res) => {
   try {
 
     const { id } = req.params
-    const { nombre_organizacion, email, password, image, enabled } = req.body
+    const data = req.body
 
-    await pool.query('UPDATE `users` SET `nombre_organizacion` = ? WHERE `users`.`id_usuario` = ?', [nombre_organizacion, id])
-    await pool.query('UPDATE `users` SET `email` = ? WHERE `users`.`id_usuario` = ?', [email, id])
-    // await pool.query('UPDATE `users` SET `password` = ? WHERE `users`.`id_usuario` = ?', [bcrypt.hashSync(password, salt), id])
-    
-    if (image && image !== undefined && image !== '') {
-      await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [image, id])
-    }else {
-      let defaultImage = '/img/default.jpg'
-      await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [defaultImage, id])
-    }
-    await pool.query('UPDATE `users` SET `enabled` = ? WHERE `users`.`id_usuario` = ?', [enabled, id])
+    await updateUser(data, id)
 
     res.status(200).send({
       ok: 200,
@@ -128,9 +112,9 @@ const actualizarContraseña = async (req, res) => {
   try {
 
     const { id } = req.params
-    const { password } = req.body
+    const data = req.body
 
-    await pool.query('UPDATE `users` SET `password` = ? WHERE `users`.`id_usuario` = ?', [bcrypt.hashSync(password, salt), id])
+    await updatePassword(data, id)
 
     return res.status(200).send({
       ok: 200,
@@ -155,7 +139,7 @@ const borrarUsuario = async (req, res) => {
 
     const { id } = req.params
 
-    await pool.query('DELETE FROM `users` WHERE id_usuario = ?', [id])
+    await deleteUser(id)
 
     return res.status(200).send({
       ok: 200,
