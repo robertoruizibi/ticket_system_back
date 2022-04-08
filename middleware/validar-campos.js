@@ -5,7 +5,8 @@ Importacion de modulos
 const { response } = require('express');
 const { validationResult } = require('express-validator');
 const pool = require('../database/configdb');
-const { isObjEmpty, checkEmailInBD } = require('../utils/common')
+const { checkEmailInBD } = require('../utils/dbCalls')
+const { isObjEmpty } = require('../utils/common')
 
 // Comprobar con express validator si los campos existen
 const validarCampos = (req, res = response, next) => {

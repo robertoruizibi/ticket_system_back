@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const { response } = require('express');
-const { checkEmailInBD, checkPasswordInBD } = require('../utils/common')
+const { checkEmailInBD, checkPasswordInBD } = require('../utils/dbCalls')
 const { generarJWT } = require('../helpers/jwt')
 
 // Create salt for hashing passwords
