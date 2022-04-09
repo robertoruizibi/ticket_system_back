@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const validarJWT = (req, res, next) => {
   const token = req.header('x-auth');
   
-  console.log('token', token);
   if (!token) {
     return res.status(401).json({
       ok: 401,
