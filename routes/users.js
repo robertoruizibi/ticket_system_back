@@ -12,7 +12,10 @@ const { validarJWT } = require('../middleware/validar-jwt')
 const router = Router();
 
 // GET
-router.get('/', validarJWT, getUsuarios);
+router.get('/', [
+  validarJWT,
+  check('desde', 'El desde debe ser un número').optional().isNumeric(),
+], getUsuarios);
 router.get('/:id',[
   validarJWT,
   check('id', 'El identificador no es válido').isNumeric(),
