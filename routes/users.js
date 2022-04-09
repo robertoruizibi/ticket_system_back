@@ -13,36 +13,49 @@ const router = Router();
 
 // GET
 router.get('/', validarJWT, getUsuarios);
-router.get('/:id', getUsuario);
+router.get('/:id',[
+  validarJWT,
+  check('id', 'El identificador no es válido').isNumeric(),
+  validarCampos
+], getUsuario);
 
 // POST
 router.post('/', [
+  validarJWT,
   check('nombre_organizacion', 'El argumento nombre_organizacion es obligatorio').not().isEmpty(),
   check('email', 'El argumento email es obligatorio').not().isEmpty(),
   check('password', 'El argumento password es obligatorio').not().isEmpty(),
-  [validarJWT, validarCampos, checkEmailexists],
+  check('image', 'El argumento image es obligatorio').optional().isEmpty(),
+  validarCampos, 
+  checkEmailexists
 ], createUsuario);
 
 // PUT
 router.put('/:id', [
+  validarJWT,
   check('nombre_organizacion', 'El argumento nombre_organizacion es obligatorio').not().isEmpty(),
   check('email', 'El argumento email es obligatorio').not().isEmpty(),
-  // check('password', 'El argumento password es obligatorio').not().isEmpty(),
   check('enabled', 'El argumento enabled es obligatorio').not().isEmpty(),
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarJWT, validarCampos, checkUserExists, checkEmailExistsPUT],
+  validarCampos,
+  checkUserExists,
+  checkEmailExistsPUT
 ],actualizarUsuario);
 
 router.put('/change_password/:id', [
+  validarJWT,
   check('password', 'El argumento password es obligatorio').not().isEmpty(),
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarJWT, validarCampos, checkUserExists]
+  validarCampos, 
+  checkUserExists
 ], actualizarContraseña);
 
 // DELETE
 router.delete('/:id',[
+  validarJWT,
   check('id', 'El identificador no es válido').isNumeric(),
-  [validarJWT, validarCampos, checkUserExists]
+  validarCampos, 
+  checkUserExists
 ], borrarUsuario);
 
 module.exports = router;
