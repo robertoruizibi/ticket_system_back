@@ -17,6 +17,8 @@ app.use(express.json());
 app.use('/api/users', require('./routes/users'));
 app.use('/api/login', require('./routes/auth'));
 
+app.use('/api/upload', require('./routes/uploads'));
+
 // Abrir la aplicacíon en el puerto 3000
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en el puerto ' + process.env.PORT);
