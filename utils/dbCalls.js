@@ -3,7 +3,8 @@ Importacion de modulos
 */
 const pool = require('../database/configdb');
 const bcrypt = require('bcryptjs');
-const { getFirstQueryValue, queryResultToObject } = require('./common')
+const { getFirstQueryValue, queryResultToObject, isObjEmpty } = require('./common')
+const fs = require('fs')
 
 //---------------------------------------------------------------//
 //                         LOGIN QUERIES                         //
@@ -75,4 +76,52 @@ const deleteUser = async (id) => {
   pool.query('DELETE FROM `users` WHERE id_usuario = ?', [id])
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser }
+
+//---------------------------------------------------------------//
+//                        UPLOAD QUERIES                         //
+//---------------------------------------------------------------//
+
+const insetImageBD = async ( fileName, id ) => {
+  await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [fileName, id])
+}
+
+const updateBD = async (tipo, path, fileName, id) => {
+ 
+  switch (tipo) {
+    case 'fotoPerfil':
+        const user = await getUserData(id)
+        if (isObjEmpty(user)) {
+          return false
+        }
+
+        const oldImage = user.image
+        const pathOldImage = `${oldImage}`
+        console.log('pathOldImage', pathOldImage);
+        console.log('oldImage  && fs.existsSync(pathOldImage)', oldImage  && fs.existsSync(pathOldImage));
+        console.log('oldImage', oldImage);
+        console.log('fs.existsSync(pathOldImage)', fs.existsSync(pathOldImage));
+        if (oldImage  && fs.existsSync(pathOldImage)) {
+          fs.unlinkSync(pathOldImage)
+        }
+       
+        await insetImageBD(`${path}/${fileName}`, id)
+
+        return true
+
+      break;
+
+    case 'ficheroReporte':
+     
+      break;
+  
+    default:
+        return res.status(400).send({
+          ok: 400,
+          msg: `This type of operation is not allowed`,
+          type: tipo
+        });
+      break;
+  }
+}
+
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser, updateBD }

@@ -4,6 +4,8 @@ Importacion de modulos
 const pool = require('../database/configdb');
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
+const { updateBD } = require('../utils/dbCalls')
+const fs = require('fs')
 
 // GET
 const enviarArchivo = async (req, res) => {
@@ -89,7 +91,9 @@ const subirArchivo = async (req, res) => {
         break;
     }
 
-    const uploadPath = `${process.env.PATHUPLOAD}/${tipo}/${uuidv4()}.${extension}`
+    const path = `${process.env.PATHUPLOAD}/${tipo}`
+    const fileName = `${uuidv4()}.${extension}`
+    const uploadPath = `${path}/${fileName}`
 
     archivo.mv(uploadPath, (err) => {
       if (err) {
@@ -100,10 +104,28 @@ const subirArchivo = async (req, res) => {
         });
       }
 
-      res.status(200).send({
-        ok: 200,
-        msg: "File uploaded succesfully"
-      });
+      updateBD(tipo, path, fileName, id)
+        .then(value => {
+          if (!value) {
+            fs.unlinkSync(uploadPath)
+            return res.status(400).send({
+              ok: 400,
+              msg: `BD could not be updated`,
+            });
+          } else {
+            res.status(200).send({
+              ok: 200,
+              msg: "File uploaded succesfully",
+              fileName
+            });
+          }
+        }).catch(error => {
+          fs.unlinkSync(uploadPath)
+          return res.status(400).send({
+            ok: 400,
+            msg: `Error loading file`,
+          });
+        })
     });
 
   } catch (error) {
