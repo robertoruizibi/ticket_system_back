@@ -21,6 +21,7 @@ app.use(fileUpload({
 // app.use('/users', require('./routes/users'))
 
 app.use('/api/users', require('./routes/users'));
+app.use('/api/tickets', require('./routes/tickets'));
 app.use('/api/login', require('./routes/auth'));
 
 app.use('/api/upload', require('./routes/uploads'));

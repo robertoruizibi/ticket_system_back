@@ -41,10 +41,6 @@ const getNumUsers = async () => {
   return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `users`'))
 }
 
-const getSignleUser = async (id) => {
-  return queryResultToObject(await pool.query('SELECT * FROM `users` WHERE id_usuario = ?', [id]))
-}
-
 const createUser = async ({ nombre_organizacion, email, password, image }) => {
   const newUser = {
     nombre_organizacion,
@@ -124,4 +120,42 @@ const updateBD = async (tipo, path, fileName, id) => {
   }
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser, updateBD }
+//---------------------------------------------------------------//
+//                       TICKETS QUERIES                         //
+//---------------------------------------------------------------//
+const getTicketData = async (id) => {
+  return queryResultToObject(await pool.query('SELECT * FROM `tickets` WHERE id_ticket = ?', [id]))
+}
+
+const getTicketsBd = async (desde = 0, registropp = 10) => {
+  return await pool.query('SELECT * FROM `tickets` LIMIT ? , ?', [desde, registropp])
+}
+
+const getNumTickets = async () => {
+  return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `tickets`'))
+}
+
+const createTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled }) => {
+  const newTicket = {
+    prioridad,
+    responsable,
+    cliente,
+    titulo,
+    enabled
+  }
+  return queryResultToObject(await pool.query('INSERT INTO `tickets` set ?', [newTicket]))
+}
+
+const updateTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled }, id) => {
+  await pool.query('UPDATE `tickets` SET `prioridad` = ? WHERE `tickets`.`id_ticket` = ?', [prioridad, id])
+  await pool.query('UPDATE `tickets` SET `responsable` = ? WHERE `tickets`.`id_ticket` = ?', [responsable, id])
+  await pool.query('UPDATE `tickets` SET `cliente` = ? WHERE `tickets`.`id_ticket` = ?', [cliente, id])
+  await pool.query('UPDATE `tickets` SET `titulo` = ? WHERE `tickets`.`id_ticket` = ?', [titulo, id])
+  await pool.query('UPDATE `tickets` SET `enabled` = ? WHERE `tickets`.`id_ticket` = ?', [enabled, id])
+}
+
+const deleteTicketBd = async (id) => {
+  await pool.query('DELETE FROM `tickets` WHERE id_ticket = ?', [id])
+}
+
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd }
