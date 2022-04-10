@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-const { getUsers, getNumUsers, getSignleUser, createUser, updateUser, updatePassword, deleteUser } = require('../utils/dbCalls')
+const { getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser } = require('../utils/dbCalls')
 
 // GET
 const getUsuarios = async (req, res) => {
@@ -14,16 +14,16 @@ const getUsuarios = async (req, res) => {
     const [usuarios, total] = await Promise.all([
       getUsers(desde, registropp),
       getNumUsers()
-  ]);
+    ]);
 
     res.status(200).send({
       ok: 200,
       msg: 'getUsuarios',
       usuarios: usuarios,
       page: {
-          desde,
-          registropp,
-          total
+        desde,
+        registropp,
+        total
       }
     });
 
@@ -43,7 +43,7 @@ const getUsuario = async (req, res) => {
   try {
 
     const { id } = req.params
-    const usuario = await getSignleUser(id)
+    const usuario = await getUserData(id)
 
     res.status(200).send({
       ok: 200,
