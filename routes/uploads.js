@@ -11,11 +11,10 @@ const { validarCampos, checkUserExists } = require('../middleware/validar-campos
 const router = Router();
 
 // GET
-router.get('/:tipo/:id', [
+router.get('/:tipo/:fileName', [
   validarJWT,
-  check('id', 'El identificador no es válido').isNumeric(),
-  validarCampos,
-  checkUserExists
+  check('fileName', 'El identificador no es válido').trim(),
+  validarCampos
 ], enviarArchivo);
 
 // POST

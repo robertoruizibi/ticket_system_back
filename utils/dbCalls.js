@@ -104,7 +104,7 @@ const updateBD = async (tipo, path, fileName, id) => {
           fs.unlinkSync(pathOldImage)
         }
        
-        await insetImageBD(`${path}/${fileName}`, id)
+        await insetImageBD(`${fileName}`, id)
 
         return true
 
