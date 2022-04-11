@@ -158,4 +158,41 @@ const deleteTicketBd = async (id) => {
   await pool.query('DELETE FROM `tickets` WHERE id_ticket = ?', [id])
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd }
+//---------------------------------------------------------------//
+//                        FECHAS QUERIES                         //
+//---------------------------------------------------------------//
+
+const getDateData = async (id) => {
+  return queryResultToObject(await pool.query('SELECT * FROM `dates` WHERE id_ticket = ?', [id]))
+}
+
+const getDatesBd = async (desde = 0, registropp = 10) => {
+  return await pool.query('SELECT * FROM `dates` LIMIT ? , ?', [desde, registropp])
+}
+
+const getNumDates = async () => {
+  return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `dates`'))
+}
+
+const createDateBd = async ({ fecha_creacion, fecha_actualizacion, ultima_fecha_consulta_cliente, id_ticket }) => {
+  const newDate = {
+    fecha_creacion,
+    fecha_actualizacion,
+    ultima_fecha_consulta_cliente,
+    id_ticket
+  }
+  return queryResultToObject(await pool.query('INSERT INTO `dates` set ?', [newDate]))
+}
+
+const updateDatetBd = async ({ fecha_creacion, fecha_actualizacion, ultima_fecha_consulta_cliente, id_ticket }, id) => {
+  await pool.query('UPDATE `dates` SET `fecha_creacion` = ? WHERE `dates`.`id_ticket` = ?', [fecha_creacion, id])
+  await pool.query('UPDATE `dates` SET `fecha_actualizacion` = ? WHERE `dates`.`id_ticket` = ?', [fecha_actualizacion, id])
+  await pool.query('UPDATE `dates` SET `ultima_fecha_consulta_cliente` = ? WHERE `dates`.`id_ticket` = ?', [ultima_fecha_consulta_cliente, id])
+  await pool.query('UPDATE `dates` SET `id_ticket` = ? WHERE `dates`.`id_ticket` = ?', [id_ticket, id])
+}
+
+const deleteDateBd = async (id) => {
+  await pool.query('DELETE FROM `dates` WHERE id_ticket = ?', [id])
+}
+
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd }

@@ -5,7 +5,7 @@ Importacion de modulos
 const { response } = require('express');
 const { validationResult } = require('express-validator');
 const pool = require('../database/configdb');
-const { checkEmailInBD, getUserData, getTicketData } = require('../utils/dbCalls')
+const { checkEmailInBD, getUserData, getTicketData, getDateData } = require('../utils/dbCalls')
 const { isObjEmpty, queryResultToObject } = require('../utils/common')
 
 // Comprobar con express validator si los campos existen
@@ -155,6 +155,63 @@ const checkTicketExistsDELETE = async (req, res = response, next) => {
   next();
 }
 
+const checkDatesExists = async (req, res = response, next) => {
+  const { id_ticket } = req.body
+  const date = queryResultToObject(await pool.query('SELECT * FROM `dates` WHERE id_ticket = ?', [id_ticket]))
+
+  if (!isObjEmpty(date)) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "This Dates collection already exists"
+    });
+  }
+
+  next();
+}
+
+const checkDatesExistsPUT = async (req, res = response, next) => {
+  const { id } = req.params
+  const { id_ticket } = req.body
+  const dateToModify = await getDateData(id)
+  const newDate = await getDateData(id_ticket)
+   
+    
+  if (!isObjEmpty(dateToModify) && !isObjEmpty(newDate) && dateToModify.id_fechas !== newDate.id_fechas) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "This Dates collection already exists"
+    });
+  }
+
+  next();
+}
+
+const checkDateDontExist = async (req, res = response, next) => {
+  const { id_ticket } = req.body
+  const date = queryResultToObject(await pool.query('SELECT * FROM `dates` WHERE id_ticket = ?', [id_ticket]))
+
+  if (isObjEmpty(date)) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "This Dates body collection do not exist"
+    });
+  }
+  next();
+}
+
+const checkDateDontExistDELETE = async (req, res = response, next) => {
+  const { id } = req.params
+  const date = queryResultToObject(await pool.query('SELECT * FROM `dates` WHERE id_ticket = ?', [id]))
+
+  if (isObjEmpty(date)) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "This Dates params collection do not exist"
+    });
+  }
+  next();
+}
+
 const checkCompanyRol = async (req, res = response, next) => {
 
   const { id } = req.params
@@ -171,4 +228,4 @@ const checkCompanyRol = async (req, res = response, next) => {
 
 }
 
-module.exports = { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists, checkCompanyRol, checkManagerExists, checkClientExists, checkTicketExists, checkTicketExistsPUT, checkTicketExistsDELETE }
+module.exports = { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists, checkCompanyRol, checkManagerExists, checkClientExists, checkTicketExists, checkTicketExistsPUT, checkTicketExistsDELETE, checkDatesExists, checkDatesExistsPUT, checkDateDontExist, checkDateDontExistDELETE }
