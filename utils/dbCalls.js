@@ -92,10 +92,6 @@ const updateBD = async (tipo, path, fileName, id) => {
 
         const oldImage = user.image
         const pathOldImage = `${oldImage}`
-        console.log('pathOldImage', pathOldImage);
-        console.log('oldImage  && fs.existsSync(pathOldImage)', oldImage  && fs.existsSync(pathOldImage));
-        console.log('oldImage', oldImage);
-        console.log('fs.existsSync(pathOldImage)', fs.existsSync(pathOldImage));
         if (oldImage  && fs.existsSync(pathOldImage)) {
           fs.unlinkSync(pathOldImage)
         }
@@ -195,4 +191,43 @@ const deleteDateBd = async (id) => {
   await pool.query('DELETE FROM `dates` WHERE id_ticket = ?', [id])
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd }
+//---------------------------------------------------------------//
+//                        FECHAS QUERIES                         //
+//---------------------------------------------------------------//
+
+const getReportData = async (id) => {
+  return queryResultToObject(await pool.query('SELECT * FROM `reports` WHERE id_reporte = ?', [id]))
+}
+
+const getReportsBd = async (id, desde = 0, registropp = 10) => {
+  return await pool.query('SELECT * FROM `reports` WHERE id_ticket = ? LIMIT ? , ?', [id, desde, registropp])
+}
+
+const getNumReports = async (id) => {
+  return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `reports` where id_ticket = ?', [id]))
+}
+
+const createReportBd = async ({ contenido, fecha_creacion, archivo_adjunto, visto, id_ticket}) => {
+  const newReport = {
+    contenido,
+    fecha_creacion,
+    archivo_adjunto,
+    visto,
+    id_ticket,
+  }
+  return queryResultToObject(await pool.query('INSERT INTO `reports` set ?', [newReport]))
+}
+
+const updateReportBd = async ({ contenido, fecha_creacion, archivo_adjunto, visto, id_ticket}, id) => {
+  await pool.query('UPDATE `reports` SET `contenido` = ? WHERE `reports`.`id_reporte` = ?', [contenido, id])
+  await pool.query('UPDATE `reports` SET `fecha_creacion` = ? WHERE `reports`.`id_reporte` = ?', [fecha_creacion, id])
+  await pool.query('UPDATE `reports` SET `archivo_adjunto` = ? WHERE `reports`.`id_reporte` = ?', [archivo_adjunto, id])
+  await pool.query('UPDATE `reports` SET `visto` = ? WHERE `reports`.`id_reporte` = ?', [visto, id])
+  await pool.query('UPDATE `reports` SET `id_ticket` = ? WHERE `reports`.`id_reporte` = ?', [id_ticket, id])
+}
+
+const deleteReportBd = async (id) => {
+  await pool.query('DELETE FROM `reports` WHERE id_reporte = ?', [id])
+}
+
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd }

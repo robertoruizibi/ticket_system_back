@@ -5,7 +5,7 @@ Importacion de modulos
 const { response } = require('express');
 const { validationResult } = require('express-validator');
 const pool = require('../database/configdb');
-const { checkEmailInBD, getUserData, getTicketData, getDateData } = require('../utils/dbCalls')
+const { checkEmailInBD, getUserData, getTicketData, getDateData, getReportData } = require('../utils/dbCalls')
 const { isObjEmpty, queryResultToObject } = require('../utils/common')
 
 // Comprobar con express validator si los campos existen
@@ -212,6 +212,38 @@ const checkDateDontExistDELETE = async (req, res = response, next) => {
   next();
 }
 
+const checkReportExistsPUT = async (req, res = response, next) => {
+  const { id } = req.params
+  const reportToModify = await getReportData(id)
+   
+    
+  if (isObjEmpty(reportToModify)) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "This report do not exists"
+    });
+  }
+
+  next();
+}
+
+const checkReportTicketExists = async (req, res = response, next) => {
+  const { id } = req.params
+  const { id_ticket } = req.body
+  const reportToModify = await getReportData(id)
+  let ticket = await getTicketData(id_ticket)
+   
+    
+  if (!isObjEmpty(ticket) && reportToModify.id_ticket !== ticket.id_ticket) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "Cannot update id_tickets value"
+    });
+  }
+
+  next();
+}
+
 const checkCompanyRol = async (req, res = response, next) => {
 
   const { id } = req.params
@@ -228,4 +260,4 @@ const checkCompanyRol = async (req, res = response, next) => {
 
 }
 
-module.exports = { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists, checkCompanyRol, checkManagerExists, checkClientExists, checkTicketExists, checkTicketExistsPUT, checkTicketExistsDELETE, checkDatesExists, checkDatesExistsPUT, checkDateDontExist, checkDateDontExistDELETE }
+module.exports = { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists, checkCompanyRol, checkManagerExists, checkClientExists, checkTicketExists, checkTicketExistsPUT, checkTicketExistsDELETE, checkDatesExists, checkDatesExistsPUT, checkDateDontExist, checkDateDontExistDELETE, checkReportExistsPUT, checkReportTicketExists }
