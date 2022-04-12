@@ -46,7 +46,7 @@ const createUser = async ({ nombre_organizacion, email, password, image }) => {
     nombre_organizacion,
     email,
     password: bcrypt.hashSync(password),
-    image: image === undefined ? '/img/default.jpg' : image,
+    image: image === undefined ? `${process.env.DEFAULT_PROFILE_IMAGE}` : image,
     enabled: true
   }
   return queryResultToObject(await pool.query('INSERT INTO `users` set ?', [newUser]))
@@ -58,7 +58,7 @@ const updateUser = async ({ nombre_organizacion, email, image, enabled }, id) =>
   if (image && image !== undefined && image !== '') {
     await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [image, id])
   }else {
-    let defaultImage = '/img/default.jpg'
+    let defaultImage = `${process.env.DEFAULT_PROFILE_IMAGE}`
     await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [defaultImage, id])
   }
   await pool.query('UPDATE `users` SET `enabled` = ? WHERE `users`.`id_usuario` = ?', [enabled, id])
@@ -81,6 +81,10 @@ const insetImageBD = async ( fileName, id ) => {
   await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [fileName, id])
 }
 
+const insetFileBD = async ( fileName, id ) => {
+  await pool.query('UPDATE `reports` SET `archivo_adjunto` = ? WHERE `reports`.`id_reporte` = ?', [fileName, id])
+}
+
 const updateBD = async (tipo, path, fileName, id) => {
  
   switch (tipo) {
@@ -91,9 +95,11 @@ const updateBD = async (tipo, path, fileName, id) => {
         }
 
         const oldImage = user.image
-        const pathOldImage = `${oldImage}`
-        if (oldImage  && fs.existsSync(pathOldImage)) {
-          fs.unlinkSync(pathOldImage)
+        if (oldImage !== process.env.DEFAULT_PROFILE_IMAGE) {
+          const pathOldImage = `${process.env.PATHUPLOAD}/fotoPerfil/${oldImage}`
+          if (oldImage  && fs.existsSync(pathOldImage)) {
+            fs.unlinkSync(pathOldImage)
+          }
         }
        
         await insetImageBD(`${fileName}`, id)
@@ -103,7 +109,21 @@ const updateBD = async (tipo, path, fileName, id) => {
       break;
 
     case 'ficheroReporte':
-     
+      
+      const report = await getReportData(id)
+      if (isObjEmpty(report)) {
+        return false
+      }
+
+      const oldFile = report.archivo_adjunto
+      const pathOldFile = `${process.env.PATHUPLOAD}/ficheroReporte/${oldFile}`
+      if (oldFile  && fs.existsSync(pathOldFile)) {
+        fs.unlinkSync(pathOldFile)
+      }
+      console.log('llego hasta aqui', fileName);
+      await insetFileBD(`${fileName}`, id)
+
+      return true
       break;
   
     default:
@@ -116,11 +136,19 @@ const updateBD = async (tipo, path, fileName, id) => {
   }
 }
 
+const deleteImageBd = async (tipo, path, fileName, id) => {
+
+}
+
 //---------------------------------------------------------------//
 //                       TICKETS QUERIES                         //
 //---------------------------------------------------------------//
 const getTicketData = async (id) => {
   return queryResultToObject(await pool.query('SELECT * FROM `tickets` WHERE id_ticket = ?', [id]))
+}
+
+const getTicketsFromCustomerUser = async (id) => {
+  return await pool.query('SELECT * FROM `tickets` WHERE cliente = ?', [id])
 }
 
 const getTicketsBd = async (desde = 0, registropp = 10) => {
@@ -151,6 +179,7 @@ const updateTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled
 }
 
 const deleteTicketBd = async (id) => {
+console.log("🚀 ~ file: dbCalls.js ~ line 158 ~ deleteTicketBd ~ id", id)
   await pool.query('DELETE FROM `tickets` WHERE id_ticket = ?', [id])
 }
 
@@ -168,6 +197,10 @@ const getDatesBd = async (desde = 0, registropp = 10) => {
 
 const getNumDates = async () => {
   return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `dates`'))
+}
+
+const getNumDatesToDelete = async (id) => {
+  return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `dates` WHERE id_ticket = ?', [id]))
 }
 
 const createDateBd = async ({ fecha_creacion, fecha_actualizacion, ultima_fecha_consulta_cliente, id_ticket }) => {
@@ -188,19 +221,30 @@ const updateDatetBd = async ({ fecha_creacion, fecha_actualizacion, ultima_fecha
 }
 
 const deleteDateBd = async (id) => {
-  await pool.query('DELETE FROM `dates` WHERE id_ticket = ?', [id])
+  let numDates = await getNumDatesToDelete(id)
+  if (numDates > 0) {
+    await pool.query('DELETE FROM `dates` WHERE id_ticket = ?', [id])
+  }
 }
 
 //---------------------------------------------------------------//
-//                        FECHAS QUERIES                         //
+//                       REPORTS QUERIES                         //
 //---------------------------------------------------------------//
 
 const getReportData = async (id) => {
   return queryResultToObject(await pool.query('SELECT * FROM `reports` WHERE id_reporte = ?', [id]))
 }
 
+const getAllReportsBd = async (desde = 0, registropp = 10) => {
+  return await pool.query('SELECT * FROM `reports` LIMIT ? , ?', [desde, registropp])
+}
+
 const getReportsBd = async (id, desde = 0, registropp = 10) => {
   return await pool.query('SELECT * FROM `reports` WHERE id_ticket = ? LIMIT ? , ?', [id, desde, registropp])
+}
+
+const getNumReportsAll = async (id) => {
+  return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `reports`'))
 }
 
 const getNumReports = async (id) => {
@@ -231,7 +275,10 @@ const deleteReportBd = async (id) => {
 }
 
 const deleteAllReportsFromTicketBd = async (id) => {
-  await pool.query('DELETE FROM `reports` WHERE id_ticket = ?', [id])
+  let numReports = await getNumReports(id)
+  if (numReports > 0){
+    await pool.query('DELETE FROM `reports` WHERE id_ticket = ?', [id])
+  }
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd }
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getAllReportsBd, getReportsBd, getNumReportsAll, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, getTicketsFromCustomerUser }

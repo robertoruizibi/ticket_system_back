@@ -2,7 +2,8 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-const { getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser } = require('../utils/dbCalls')
+const { getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, getTicketsFromCustomerUser, deleteDateBd, deleteAllReportsFromTicketBd, deleteTicketBd } = require('../utils/dbCalls')
+const { queryResultToObject } = require('../utils/common')
 
 // GET
 const getUsuarios = async (req, res) => {
@@ -144,6 +145,16 @@ const borrarUsuario = async (req, res) => {
   try {
 
     const { id } = req.params
+
+    let userTickets = await getTicketsFromCustomerUser(id)
+
+    userTickets.forEach(async ticket => {
+      let id = ticket.id_ticket
+      console.log("🚀 ~ file: users.js ~ line 153 ~ borrarUsuario ~ id", id)
+      await deleteDateBd(id)
+      await deleteAllReportsFromTicketBd(id)
+      await deleteTicketBd(id)
+    });
 
     await deleteUser(id)
 

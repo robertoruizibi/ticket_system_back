@@ -156,5 +156,48 @@ const subirArchivo = async (req, res) => {
 
 }
 
+const deleteFile = async (req, res) => {
 
-module.exports = { enviarArchivo, subirArchivo }
+  try {
+
+    const { 
+      tipo, // fotoperfil, ficheroReporte
+      fileName 
+    } = req.params
+
+    const path = `${process.env.PATHUPLOAD}/${tipo}`
+    let uploadPath = `${path}/${fileName}`
+
+    console.log('uploadPath', uploadPath);
+
+    if (!fs.existsSync(uploadPath)) {
+      if (tipo !== 'fotoPerfil') {
+        return res.status(400).send({
+          errorCode: 400,
+          errorMsg: "File does not exist"
+        });
+      }
+      uploadPath = `${path}/default-profile.jpg`;
+    }
+
+    fs.unlinkSync(uploadPath)
+
+    // res.status(200).send({
+    //   ok: 200,
+    //   msg: "File deleted succesfully",
+    //   fileName
+    // });
+
+  } catch (error) {
+
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: "Error serving file: " + error
+    });
+
+  }
+
+}
+
+
+module.exports = { enviarArchivo, subirArchivo, deleteFile }

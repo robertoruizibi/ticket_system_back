@@ -3,7 +3,6 @@ Importacion de modulos
 */
 const pool = require('../database/configdb');
 const { getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd } = require('../utils/dbCalls')
-
 // GET
 const getTickets = async (req, res) => {
 

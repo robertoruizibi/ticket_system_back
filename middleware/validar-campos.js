@@ -62,7 +62,7 @@ const checkEmailExistsPUT = async (req, res = response, next) => {
 const checkUserExists = async (req, res = response, next) => {
 
   const { id } = req.params
-  const usuario = queryResultToObject(await getUserData(id))
+  const usuario = await getUserData(id)
 
   if (id && !isObjEmpty(usuario)) {
     next();

@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const { Router } = require('express');
-const { getReports, getReport, createReport, deleteReport, updateReport, deleteAllReportsFromTicket } = require('../controllers/reports');
+const { getAllReports, getReports, getReport, createReport, deleteReport, updateReport, deleteAllReportsFromTicket } = require('../controllers/reports');
 const { check } = require('express-validator')
 const { validarCampos, checkReportExistsPUT, checkReportTicketExists, checkTicketExistsDELETE, checkAllReportTicketExists } = require('../middleware/validar-campos')
 const { validarJWT } = require('../middleware/validar-jwt')
@@ -11,10 +11,11 @@ const { validarJWT } = require('../middleware/validar-jwt')
 const router = Router();
 
 // GET
-// router.get('/', [
-//   validarJWT,
-//   check('desde', 'El desde debe ser un número').optional().isNumeric(),
-// ], getReports);
+router.get('/', [
+  validarJWT,
+  check('desde', 'El desde debe ser un número').optional().isNumeric(),
+], getAllReports);
+
 router.get('/:id',[
   validarJWT,
   check('id', 'El identificador no es válido').isNumeric(),
