@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-const { getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd } = require('../utils/dbCalls')
+const { getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd } = require('../utils/dbCalls')
 
 // GET
 const getReports = async (req, res) => {
@@ -164,4 +164,28 @@ const deleteReport = async (req, res) => {
 
 }
 
-module.exports = { getReports, getReport, createReport, deleteReport, updateReport }
+const deleteAllReportsFromTicket = async (req, res) => {
+
+  try {
+
+    const { id } = req.params
+
+    await deleteAllReportsFromTicketBd(id)
+
+    return res.status(200).send({
+      ok: 200,
+      msg: "All reports were deleted successfully"
+    });
+
+  } catch (error) {
+
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: "Error deleting reports from ticket"
+    });
+
+  }
+
+}
+
+module.exports = { getReports, getReport, createReport, deleteReport, updateReport, deleteAllReportsFromTicket }

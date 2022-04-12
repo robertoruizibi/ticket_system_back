@@ -5,7 +5,7 @@ Importacion de modulos
 const { response } = require('express');
 const { validationResult } = require('express-validator');
 const pool = require('../database/configdb');
-const { checkEmailInBD, getUserData, getTicketData, getDateData, getReportData } = require('../utils/dbCalls')
+const { checkEmailInBD, getUserData, getTicketData, getDateData, getReportData, getNumReports } = require('../utils/dbCalls')
 const { isObjEmpty, queryResultToObject } = require('../utils/common')
 
 // Comprobar con express validator si los campos existen
@@ -244,6 +244,23 @@ const checkReportTicketExists = async (req, res = response, next) => {
   next();
 }
 
+const checkAllReportTicketExists = async (req, res = response, next) => {
+  const { id } = req.params
+  const numReports = await getNumReports(id)
+  console.log("🚀 ~ file: validar-campos.js ~ line 250 ~ checkAllReportTicketExists ~ numReports", numReports)
+  console.log("🚀 ~ file: validar-campos.js ~ line 250 ~ checkAllReportTicketExists ~ numReports", numReports)
+   
+    
+  if (numReports <= 0) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: "This ticket dont have reports"
+    });
+  }
+
+  next();
+}
+
 const checkCompanyRol = async (req, res = response, next) => {
 
   const { id } = req.params
@@ -260,4 +277,4 @@ const checkCompanyRol = async (req, res = response, next) => {
 
 }
 
-module.exports = { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists, checkCompanyRol, checkManagerExists, checkClientExists, checkTicketExists, checkTicketExistsPUT, checkTicketExistsDELETE, checkDatesExists, checkDatesExistsPUT, checkDateDontExist, checkDateDontExistDELETE, checkReportExistsPUT, checkReportTicketExists }
+module.exports = { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists, checkCompanyRol, checkManagerExists, checkClientExists, checkTicketExists, checkTicketExistsPUT, checkTicketExistsDELETE, checkDatesExists, checkDatesExistsPUT, checkDateDontExist, checkDateDontExistDELETE, checkReportExistsPUT, checkReportTicketExists, checkAllReportTicketExists }

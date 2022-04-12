@@ -230,4 +230,8 @@ const deleteReportBd = async (id) => {
   await pool.query('DELETE FROM `reports` WHERE id_reporte = ?', [id])
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd }
+const deleteAllReportsFromTicketBd = async (id) => {
+  await pool.query('DELETE FROM `reports` WHERE id_ticket = ?', [id])
+}
+
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd }

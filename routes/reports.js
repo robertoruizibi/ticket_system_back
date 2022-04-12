@@ -2,9 +2,9 @@
 Importacion de modulos
 */
 const { Router } = require('express');
-const { getReports, getReport, createReport, deleteReport, updateReport } = require('../controllers/reports');
+const { getReports, getReport, createReport, deleteReport, updateReport, deleteAllReportsFromTicket } = require('../controllers/reports');
 const { check } = require('express-validator')
-const { validarCampos, checkReportExistsPUT, checkReportTicketExists } = require('../middleware/validar-campos')
+const { validarCampos, checkReportExistsPUT, checkReportTicketExists, checkTicketExistsDELETE, checkAllReportTicketExists } = require('../middleware/validar-campos')
 const { validarJWT } = require('../middleware/validar-jwt')
 
 // Crear router
@@ -53,12 +53,20 @@ router.put('/:id', [
   checkReportTicketExists
 ],updateReport);
 
-// // DELETE
-router.delete('/:id',[
+// DELETE
+router.delete('/report/:id',[
   validarJWT,
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos, 
   checkReportExistsPUT
 ], deleteReport);
+
+router.delete('/:id',[
+  validarJWT,
+  check('id', 'El identificador no es válido').isNumeric(),
+  validarCampos, 
+  checkTicketExistsDELETE,
+  checkAllReportTicketExists
+], deleteAllReportsFromTicket);
 
 module.exports = router;
