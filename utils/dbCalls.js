@@ -120,7 +120,6 @@ const updateBD = async (tipo, path, fileName, id) => {
       if (oldFile  && fs.existsSync(pathOldFile)) {
         fs.unlinkSync(pathOldFile)
       }
-      console.log('llego hasta aqui', fileName);
       await insetFileBD(`${fileName}`, id)
 
       return true
@@ -136,8 +135,28 @@ const updateBD = async (tipo, path, fileName, id) => {
   }
 }
 
-const deleteImageBd = async (tipo, path, fileName, id) => {
+const deleteFileBd = async (file, type, id) => {
+  const path = `${process.env.PATHUPLOAD}/${type}`
+  let uploadPath = `${path}/${file}`
 
+  if (!fs.existsSync(uploadPath)) {
+    return false
+  }
+
+  fs.unlinkSync(uploadPath)
+
+  switch (type) {
+    case process.env.PROFILE_PHOTO_TYPE:
+      await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [process.env.DEFAULT_PROFILE_IMAGE, id])
+      break;
+
+    case process.env.PROFILE_REPORT_TYPE:
+      await pool.query('UPDATE `reports` SET `archivo_adjunto` = ? WHERE `reports`.`id_reporte` = ?', ['', id])
+      break;
+  
+    default:
+      break;
+  }
 }
 
 //---------------------------------------------------------------//
@@ -281,4 +300,4 @@ const deleteAllReportsFromTicketBd = async (id) => {
   }
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getAllReportsBd, getReportsBd, getNumReportsAll, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, getTicketsFromCustomerUser }
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, deleteFileBd, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getAllReportsBd, getReportsBd, getNumReportsAll, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, getTicketsFromCustomerUser }

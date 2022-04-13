@@ -2,7 +2,8 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-const { getAllReportsBd, getNumReportsAll, getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd } = require('../utils/dbCalls')
+const { getAllReportsBd, getNumReportsAll, getReportsBd, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, deleteFileBd } = require('../utils/dbCalls')
+const { queryResultToObject } = require('../utils/common')
 
 // GET
 const getAllReports = async (req, res) => {
@@ -180,6 +181,9 @@ const deleteReport = async (req, res) => {
 
     const { id } = req.params
 
+    const reports = await getReportData(id)
+    await deleteFileBd(reports.archivo_adjunto, process.env.PROFILE_REPORT_TYPE, id)
+
     await deleteReportBd(id)
 
     return res.status(200).send({
@@ -204,7 +208,12 @@ const deleteAllReportsFromTicket = async (req, res) => {
 
     const { id } = req.params
 
-    await deleteAllReportsFromTicketBd(id)
+    const reports = await getReportsBd(id)
+    reports.forEach(async report => {
+      await deleteFileBd(report.archivo_adjunto, process.env.PROFILE_REPORT_TYPE, report.id_reporte)
+    });
+
+    // await deleteAllReportsFromTicketBd(id)
 
     return res.status(200).send({
       ok: 200,

@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-const { getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, getTicketsFromCustomerUser, deleteDateBd, deleteAllReportsFromTicketBd, deleteTicketBd } = require('../utils/dbCalls')
+const { getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, getTicketsFromCustomerUser, deleteDateBd, deleteAllReportsFromTicketBd, deleteTicketBd, deleteFileBd, getReportsBd } = require('../utils/dbCalls')
 const { queryResultToObject } = require('../utils/common')
 
 // GET
@@ -146,14 +146,17 @@ const borrarUsuario = async (req, res) => {
 
     const { id } = req.params
 
+    const userData = await getUserData(id)
+    await deleteFileBd(userData.image, process.env.PROFILE_PHOTO_TYPE, id)
+
     let userTickets = await getTicketsFromCustomerUser(id)
 
     userTickets.forEach(async ticket => {
       let id = ticket.id_ticket
-      console.log("🚀 ~ file: users.js ~ line 153 ~ borrarUsuario ~ id", id)
-      await deleteDateBd(id)
-      await deleteAllReportsFromTicketBd(id)
-      await deleteTicketBd(id)
+      const reports = await getReportsBd(id)
+      reports.forEach(async report => {
+        await deleteFileBd(report.archivo_adjunto, process.env.PROFILE_REPORT_TYPE, report.id_reporte)
+      });
     });
 
     await deleteUser(id)

@@ -171,22 +171,19 @@ const deleteFile = async (req, res) => {
     console.log('uploadPath', uploadPath);
 
     if (!fs.existsSync(uploadPath)) {
-      if (tipo !== 'fotoPerfil') {
-        return res.status(400).send({
-          errorCode: 400,
-          errorMsg: "File does not exist"
-        });
-      }
-      uploadPath = `${path}/default-profile.jpg`;
+      return res.status(400).send({
+        errorCode: 400,
+        errorMsg: "File does not exist"
+      });
     }
 
     fs.unlinkSync(uploadPath)
 
-    // res.status(200).send({
-    //   ok: 200,
-    //   msg: "File deleted succesfully",
-    //   fileName
-    // });
+    res.status(200).send({
+      ok: 200,
+      msg: "File deleted succesfully",
+      fileName
+    });
 
   } catch (error) {
 
