@@ -24,7 +24,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/tickets', require('./routes/tickets'));
 app.use('/api/dates', require('./routes/dates'));
 app.use('/api/reports', require('./routes/reports'));
-app.use('/api/login', require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 
 app.use('/api/upload', require('./routes/uploads'));
 

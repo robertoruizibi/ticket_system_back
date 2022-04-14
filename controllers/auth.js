@@ -2,12 +2,43 @@
 Importacion de modulos
 */
 const { response } = require('express');
-const { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail } = require('../utils/dbCalls')
+const { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData } = require('../utils/dbCalls')
 const { generarJWT } = require('../helpers/jwt')
+const jwt = require('jsonwebtoken');
+const { isObjEmpty } = require('../utils/common')
 
-// Create salt for hashing passwords
 
 // POST
+const token = async(req, res = response) => {
+
+  const token = req.headers['x-auth'];
+  
+  try {
+    const { uid, rol, ...object } = jwt.verify(token, process.env.JWTSECRET);
+
+    const userExists = await getUserData(uid)
+    if (isObjEmpty(userExists)) {
+      return res.status(400).send({
+        errorCode: 400,
+        errorMsg: 'Not valid token' 
+      });
+    } 
+
+    const newToken = await generarJWT(uid, rol);
+    res.status(200).send({
+      ok: 200,
+      msg: 'token',
+      token: newToken
+    });
+  } catch (error) {
+    return res.status(400).send({
+      errorCode: 400,
+      errorMsg: 'Not valid token' 
+    });
+  }
+
+}
+
 const login = async(req, res = response) => {
 
   try {
@@ -50,4 +81,4 @@ const login = async(req, res = response) => {
 
 }
 
-module.exports = { login }
+module.exports = { login, token }
