@@ -11,11 +11,19 @@ const getUsuarios = async (req, res) => {
   try {
 
     const desde = Number(req.query.desde) || 0;
+    const {typeOrder, asc} = req.query
     const registropp = 10;
     const [usuarios, total] = await Promise.all([
-      getUsers(desde, registropp),
+      getUsers(desde, registropp, typeOrder, asc),
       getNumUsers()
     ]);
+
+    if (!usuarios) {
+      return res.status(400).send({
+        ok: 400,
+        msg: 'Error getting users'
+      });
+    }
 
     res.status(200).send({
       ok: 200,
@@ -32,7 +40,7 @@ const getUsuarios = async (req, res) => {
 
     res.status(500).send({
       errorCode: 500,
-      errorMsg: "Error getting users"
+      errorMsg: "Error getting users: " + error
     });
 
   }

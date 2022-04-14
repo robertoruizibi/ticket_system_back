@@ -15,7 +15,10 @@ const router = Router();
 router.get('/', [
   validarJWT,
   check('desde', 'El desde debe ser un número').optional().isNumeric(),
+  check('typeOrder', 'El desde debe ser un número').optional(),
+  check('asc', 'El desde debe ser un número').optional(),
 ], getUsuarios);
+
 router.get('/:id',[
   validarJWT,
   check('id', 'El identificador no es válido').isNumeric(),

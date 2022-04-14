@@ -33,8 +33,11 @@ const getUserData = async (id) => {
   return queryResultToObject(await pool.query('SELECT * FROM `users` WHERE id_usuario = ?', [id]))
 }
 
-const getUsers = async (desde = 0, registropp = 10) => {
-  return await pool.query('SELECT * FROM `users` LIMIT ? , ?', [desde, registropp])
+const getUsers = async (desde = 0, registropp = 10, typeOrder = 'name', asc='asc') => {
+  const supportedFilters = ['name', 'email']
+  if (!supportedFilters.includes(typeOrder)) return false
+  if (typeOrder === 'name') typeOrder = 'nombre_organizacion'
+  return await pool.query(`SELECT * FROM users ORDER BY ${typeOrder} ${asc} LIMIT ? , ?`, [desde, registropp])
 }
 
 const getNumUsers = async () => {
@@ -170,8 +173,13 @@ const getTicketsFromCustomerUser = async (id) => {
   return await pool.query('SELECT * FROM `tickets` WHERE cliente = ?', [id])
 }
 
-const getTicketsBd = async (desde = 0, registropp = 10) => {
-  return await pool.query('SELECT * FROM `tickets` LIMIT ? , ?', [desde, registropp])
+const getTicketsBd = async (desde = 0, registropp = 10, typeOrder = 'title', asc='asc') => {
+  const supportedFilters = ['title', 'priority', 'enabled', 'date']
+  if (!supportedFilters.includes(typeOrder)) return false
+  if (typeOrder === 'title') typeOrder = 'titulo'
+  else if (typeOrder === 'priority') typeOrder = 'prioridad'
+  else if (typeOrder === 'date') typeOrder = 'id_ticket'
+  return await pool.query(`SELECT * FROM tickets ORDER BY ${typeOrder} ${asc} LIMIT ? , ?`, [desde, registropp])
 }
 
 const getNumTickets = async () => {
