@@ -169,6 +169,14 @@ const getTicketData = async (id) => {
   return queryResultToObject(await pool.query('SELECT * FROM `tickets` WHERE id_ticket = ?', [id]))
 }
 
+const getTicketFromRespAndCust = async (responsable, cliente) => {
+  return queryResultToObject(await pool.query('SELECT titulo FROM `tickets` WHERE responsable = ? AND cliente = ?', [responsable, cliente]))
+}
+
+const getTicketFromRespAndCustTit = async (responsable, cliente, titulo) => {
+  return queryResultToObject(await pool.query('SELECT * FROM `tickets` WHERE responsable = ? AND cliente = ? AND titulo = ?', [responsable, cliente, titulo]))
+}
+
 const getTicketsFromCustomerUser = async (id) => {
   return await pool.query('SELECT * FROM `tickets` WHERE cliente = ?', [id])
 }
@@ -308,4 +316,4 @@ const deleteAllReportsFromTicketBd = async (id) => {
   }
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, deleteFileBd, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getAllReportsBd, getReportsBd, getNumReportsAll, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, getTicketsFromCustomerUser }
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, deleteFileBd, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getAllReportsBd, getReportsBd, getNumReportsAll, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, getTicketsFromCustomerUser, getTicketFromRespAndCust, getTicketFromRespAndCustTit }
