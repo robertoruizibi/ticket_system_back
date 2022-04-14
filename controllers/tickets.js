@@ -9,10 +9,11 @@ const getTickets = async (req, res) => {
   try {
 
     const desde = Number(req.query.desde) || 0;
+    const {typeOrder, asc} = req.query
     const registropp = 10;
 
     const [tickets, total] = await Promise.all([
-      getTicketsBd(desde, registropp),
+      getTicketsBd(desde, registropp, typeOrder, asc),
       getNumTickets()
     ]);
 

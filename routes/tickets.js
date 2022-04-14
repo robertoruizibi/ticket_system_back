@@ -14,6 +14,8 @@ const router = Router();
 router.get('/', [
   validarJWT,
   check('desde', 'El desde debe ser un número').optional().isNumeric(),
+  check('typeOrder', 'El desde debe ser un número').optional(),
+  check('asc', 'El desde debe ser un número').optional(),
 ], getTickets);
 router.get('/:id',[
   validarJWT,
