@@ -5,7 +5,7 @@ const { Router } = require('express');
 const { getAllReports, getReports, getReport, createReport, deleteReport, updateReport, deleteAllReportsFromTicket } = require('../controllers/reports');
 const { check } = require('express-validator')
 const { validarCampos, checkReportExistsPUT, checkReportTicketExists, checkTicketExistsDELETE, checkAllReportTicketExists } = require('../middleware/validar-campos')
-const { validarJWT } = require('../middleware/validar-jwt')
+const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')
 
 // Crear router
 const router = Router();
@@ -32,6 +32,7 @@ router.get('/report/:id',[
 // POST
 router.post('/', [
   validarJWT,
+  verifyAdminRol,
   check('contenido', 'El argumento contenido es obligatorio').not().isEmpty(),
   check('fecha_creacion', 'El argumento fecha_creacion es obligatorio').not().isEmpty(),
   check('archivo_adjunto', 'El argumento archivo_adjunto es obligatorio').optional(),
@@ -43,6 +44,7 @@ router.post('/', [
 // // PUT
 router.put('/:id', [
   validarJWT,
+  verifyAdminRol,
   check('contenido', 'El argumento contenido es obligatorio').not().isEmpty(),
   check('fecha_creacion', 'El argumento fecha_creacion es obligatorio').not().isEmpty(),
   check('archivo_adjunto', 'El argumento archivo_adjunto es obligatorio').optional(),
@@ -57,6 +59,7 @@ router.put('/:id', [
 // DELETE
 router.delete('/report/:id',[
   validarJWT,
+  verifyAdminRol,
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos, 
   checkReportExistsPUT
@@ -64,6 +67,7 @@ router.delete('/report/:id',[
 
 router.delete('/:id',[
   validarJWT,
+  verifyAdminRol,
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos, 
   checkTicketExistsDELETE,

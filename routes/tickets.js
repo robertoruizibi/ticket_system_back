@@ -5,7 +5,7 @@ const { Router } = require('express');
 const { getTickets, getTicket, createTicket, deleteTicket, updateTicket } = require('../controllers/tickets');
 const { check } = require('express-validator')
 const { validarCampos, checkTicketExistsPUT, checkTicketExistsDELETE, checkManagerExists, checkClientExists, checkTicketExists } = require('../middleware/validar-campos')
-const { validarJWT } = require('../middleware/validar-jwt')
+const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')
 
 // Crear router
 const router = Router();
@@ -26,6 +26,7 @@ router.get('/:id',[
 // POST
 router.post('/', [
   validarJWT,
+  verifyAdminRol,
   check('prioridad', 'El argumento prioridad es obligatorio').not().isEmpty(),
   check('responsable', 'El argumento responsable es obligatorio y numérico').isNumeric(),
   check('cliente', 'El argumento cliente es obligatorio y numérico').isNumeric(),
@@ -40,6 +41,7 @@ router.post('/', [
 // PUT
 router.put('/:id', [
   validarJWT,
+  verifyAdminRol,
   check('prioridad', 'El argumento prioridad es obligatorio').not().isEmpty(),
   check('responsable', 'El argumento responsable es obligatorio y numérico').isNumeric(),
   check('cliente', 'El argumento cliente es obligatorio y numérico').isNumeric(),
@@ -56,6 +58,7 @@ router.put('/:id', [
 // DELETE
 router.delete('/:id',[
   validarJWT,
+  verifyAdminRol,
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos, 
   checkTicketExistsDELETE

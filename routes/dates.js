@@ -6,7 +6,7 @@ const { getDates, getDate, createDate, updateDate, deleteDate } = require('../co
 const bodyParser = require('body-parser');
 const { check } = require('express-validator')
 const { validarCampos, checkDatesExistsPUT, checkDatesExists, checkDateDontExist, checkDateDontExistDELETE } = require('../middleware/validar-campos')
-const { validarJWT } = require('../middleware/validar-jwt')
+const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')
 
 // Crear router
 const router = Router();
@@ -25,6 +25,7 @@ router.get('/:id',[
 // POST
 router.post('/', [
   validarJWT,
+  verifyAdminRol,
   check('fecha_creacion', 'El argumento fecha_creacion es obligatorio').not().isEmpty(),
   check('fecha_actualizacion', 'El argumento fecha_actualizacion es obligatorio').not().isEmpty(),
   check('ultima_fecha_consulta_cliente', 'El argumento ultima_fecha_consulta_cliente es obligatorio').optional(),
@@ -36,6 +37,7 @@ router.post('/', [
 // PUT
 router.put('/:id', [
   validarJWT,
+  verifyAdminRol,
   check('fecha_creacion', 'El argumento fecha_creacion es obligatorio').optional(),
   check('fecha_actualizacion', 'El argumento fecha_actualizacion es obligatorio').optional(),
   check('ultima_fecha_consulta_cliente', 'El argumento ultima_fecha_consulta_cliente es obligatorio').optional(),
@@ -50,6 +52,7 @@ router.put('/:id', [
 // DELETE
 router.delete('/:id',[
   validarJWT,
+  verifyAdminRol,
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos,
   checkDateDontExistDELETE

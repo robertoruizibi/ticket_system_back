@@ -3,7 +3,7 @@ Ruta base: /api/upload
 */
 const { Router } = require('express');
 const { enviarArchivo, subirArchivo, deleteFile } = require('../controllers/uploads');
-const { validarJWT } = require('../middleware/validar-jwt')
+const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')
 const { check } = require('express-validator')
 const { validarCampos, checkUserExists } = require('../middleware/validar-campos')
 
@@ -20,6 +20,7 @@ router.get('/:tipo/:fileName', [
 // POST
 router.post('/:tipo/:id', [
   validarJWT,
+  verifyAdminRol,
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos
 ], subirArchivo);
@@ -27,6 +28,7 @@ router.post('/:tipo/:id', [
 // DELETE
 router.delete('/:tipo/:fileName', [
   validarJWT,
+  verifyAdminRol,
   check('fileName', 'El identificador no es válido').trim(),
   validarCampos
 ], deleteFile);
