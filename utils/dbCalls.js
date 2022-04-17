@@ -34,7 +34,7 @@ const getUserData = async (id) => {
 }
 
 const getUsers = async (desde = 0, registropp = 10, typeOrder = 'name', asc='asc') => {
-  const supportedFilters = ['name', 'email']
+  const supportedFilters = ['name', 'email', 'enabled']
   if (!supportedFilters.includes(typeOrder)) return false
   if (typeOrder === 'name') typeOrder = 'nombre_organizacion'
   return await pool.query(`SELECT * FROM users ORDER BY ${typeOrder} ${asc} LIMIT ? , ?`, [desde, registropp])
