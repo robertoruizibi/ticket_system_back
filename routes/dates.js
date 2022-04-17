@@ -3,7 +3,6 @@ Importacion de modulos
 */
 const { Router } = require('express');
 const { getDates, getDate, createDate, updateDate, deleteDate } = require('../controllers/dates');
-const bodyParser = require('body-parser');
 const { check } = require('express-validator')
 const { validarCampos, checkDatesExistsPUT, checkDatesExists, checkDateDontExist, checkDateDontExistDELETE } = require('../middleware/validar-campos')
 const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')

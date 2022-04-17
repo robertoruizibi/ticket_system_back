@@ -3,7 +3,6 @@ Importacion de modulos
 */
 const { Router } = require('express');
 const { getUsuarios, getUsuario, createUsuario, borrarUsuario, actualizarUsuario, actualizarContraseña } = require('../controllers/users');
-const bodyParser = require('body-parser');
 const { check } = require('express-validator')
 const { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists } = require('../middleware/validar-campos')
 const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')
