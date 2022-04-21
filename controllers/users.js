@@ -12,7 +12,7 @@ const getUsuarios = async (req, res) => {
 
     const desde = Number(req.query.desde) || 0;
     const {typeOrder, asc} = req.query
-    const registropp = 10;
+    const registropp = 99;
     const [usuarios, total] = await Promise.all([
       getUsers(desde, registropp, typeOrder, asc),
       getNumUsers()
@@ -57,7 +57,14 @@ const getUsuario = async (req, res) => {
     res.status(200).send({
       ok: 200,
       msg: 'getUsuario',
-      usuarios: usuario
+      usuario: {
+        nombre_organizacion: usuario.nombre_organizacion,
+        email: usuario.email,
+        id_usuario: usuario.id_usuario,
+        enabled: usuario.enabled,
+        image: usuario.image,
+        rol: usuario.rol
+      }
     });
 
   } catch (error) {
@@ -78,10 +85,18 @@ const createUsuario = async (req, res) => {
 
     const data = req.body
 
-    const post = await createUser(data)
+    const userData = await createUser(data)
     res.status(200).send({
       ok: 200,
-      msg: "User created successfully"
+      msg: "User created successfully",
+      usuario: {
+        nombre_organizacion: userData.nombre_organizacion,
+        email: userData.email,
+        id_usuario: userData.id_usuario,
+        enabled: userData.enabled,
+        image: userData.image,
+        rol: userData.rol
+      }
     });
 
   } catch (error) {
@@ -122,7 +137,7 @@ const actualizarUsuario = async (req, res) => {
 }
 
 // PUT
-const actualizarContraseña = async (req, res) => {
+const actualizarContrasena = async (req, res) => {
 
   try {
 
@@ -155,7 +170,9 @@ const borrarUsuario = async (req, res) => {
     const { id } = req.params
 
     const userData = await getUserData(id)
-    await deleteFileBd(userData.image, process.env.PROFILE_PHOTO_TYPE, id)
+    if (userData.image !== '') {
+      await deleteFileBd(userData.image, process.env.PROFILE_PHOTO_TYPE, id)
+    }
 
     let userTickets = await getTicketsFromCustomerUser(id)
 
@@ -185,4 +202,4 @@ const borrarUsuario = async (req, res) => {
 
 }
 
-module.exports = { getUsuarios, getUsuario, createUsuario, borrarUsuario, actualizarUsuario, actualizarContraseña }
+module.exports = { getUsuarios, getUsuario, createUsuario, borrarUsuario, actualizarUsuario, actualizarContrasena }

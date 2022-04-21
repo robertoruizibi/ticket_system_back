@@ -4,7 +4,7 @@ const { isObjEmpty } = require('../utils/common')
 
 
 const validarJWT = (req, res, next) => {
-  const token = req.header('x-auth');
+  const token = req.headers['x-auth'] !== undefined ? req.headers['x-auth'] : req.query['x-auth'];
   
   if (!token) {
     return res.status(401).json({
@@ -33,7 +33,6 @@ const verifyAdminRol = async (req, res, next) => {
     
     const { uid, rol, ...object } = jwt.verify(token, process.env.JWTSECRET);
     const userExists = await getUserData(uid)
-    console.log("🚀 ~ file: validar-jwt.js ~ line 32 ~ verifyAdminRol ~ userExists", userExists)
     if (isObjEmpty(userExists)) {
       return res.status(400).send({
         errorCode: 400,

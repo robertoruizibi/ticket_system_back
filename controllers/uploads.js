@@ -20,7 +20,6 @@ const enviarArchivo = async (req, res) => {
     const path = `${process.env.PATHUPLOAD}/${tipo}`
     let uploadPath = `${path}/${fileName}`
 
-    console.log('uploadPath', uploadPath);
 
     if (!fs.existsSync(uploadPath)) {
       if (tipo !== 'fotoPerfil') {
@@ -168,7 +167,6 @@ const deleteFile = async (req, res) => {
     const path = `${process.env.PATHUPLOAD}/${tipo}`
     let uploadPath = `${path}/${fileName}`
 
-    console.log('uploadPath', uploadPath);
 
     if (!fs.existsSync(uploadPath)) {
       return res.status(400).send({

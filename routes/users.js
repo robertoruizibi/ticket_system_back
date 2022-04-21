@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const { Router } = require('express');
-const { getUsuarios, getUsuario, createUsuario, borrarUsuario, actualizarUsuario, actualizarContraseña } = require('../controllers/users');
+const { getUsuarios, getUsuario, createUsuario, borrarUsuario, actualizarUsuario, actualizarContrasena } = require('../controllers/users');
 const { check } = require('express-validator')
 const { validarCampos, checkEmailexists, checkEmailExistsPUT, checkUserExists } = require('../middleware/validar-campos')
 const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')
@@ -33,7 +33,6 @@ router.post('/', [
   check('nombre_organizacion', 'El argumento nombre_organizacion es obligatorio').not().isEmpty(),
   check('email', 'El argumento email es obligatorio').not().isEmpty(),
   check('password', 'El argumento password es obligatorio').not().isEmpty(),
-  check('image', 'El argumento image es obligatorio').optional().isEmpty(),
   validarCampos, 
   checkEmailexists
 ], createUsuario);
@@ -57,7 +56,7 @@ router.put('/change_password/:id', [
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos, 
   checkUserExists
-], actualizarContraseña);
+], actualizarContrasena);
 
 // DELETE
 router.delete('/:id',[

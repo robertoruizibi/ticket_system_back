@@ -19,8 +19,10 @@ const token = async(req, res = response) => {
     const userExists = await getUserData(uid)
     if (isObjEmpty(userExists)) {
       return res.status(400).send({
-        errorCode: 400,
-        errorMsg: 'Not valid token' 
+        error: {
+          errorCode: 400,
+          errorMsg: 'Not valid token' 
+        }
       });
     } 
 
@@ -28,12 +30,21 @@ const token = async(req, res = response) => {
     res.status(200).send({
       ok: 200,
       msg: 'token',
-      token: newToken
+      token: newToken,
+      user: {
+        nombre_organizacion: userExists.nombre_organizacion,
+        email: userExists.email,
+        image: userExists.image,
+        enabled: userExists.enabled,
+        rol: userExists.rol
+      }
     });
   } catch (error) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: 'Not valid token' 
+      error: {
+        errorCode: 400,
+        errorMsg: 'Not valid token' 
+      }
     });
   }
 
@@ -49,8 +60,10 @@ const login = async(req, res = response) => {
     const emailExists = await checkEmailInBD(email)
     if (!emailExists) {
       return res.status(400).send({
-        errorCode: 400,
-        errorMsg: 'Email or password are not correct'
+        error: {
+          errorCode: 400,
+          errorMsg: 'Email or password are not correct' 
+        }
       });
     } 
 
@@ -58,24 +71,38 @@ const login = async(req, res = response) => {
     const validPassword = await checkPasswordInBD(password, email)
     if (!validPassword) {
       return res.status(400).json({
-        errorCode: 400,
-        errorMsg: 'Email or password are not correct',
+        error: {
+          errorCode: 400,
+          errorMsg: 'Email or password are not correct' 
+        }
       });
     }
 
     // Generating JWT token
-    let {id_usuario, rol} = await getUserDataFromEmail(email)
+    let {id_usuario, rol, nombre_organizacion, userEmail, image, enabled} = await getUserDataFromEmail(email)
     const token = await generarJWT(id_usuario, rol);
 
     // Everything ok, responde 200
     res.status(200).send({
       ok: 200,
       msg: 'login',
-      token: token
+      token: token,
+      user: {
+        nombre_organizacion,
+        email: userEmail,
+        image,
+        enabled,
+        rol
+      }
     });
 
   } catch (error) {
-    
+    return res.status(400).send({
+      error: {
+        errorCode: 400,
+        errorMsg: 'Not valid token' 
+      }
+    });
   }
 
 

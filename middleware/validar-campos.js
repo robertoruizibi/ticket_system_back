@@ -14,8 +14,10 @@ const validarCampos = (req, res = response, next) => {
   const erroresVal = validationResult(req);
   if (!erroresVal.isEmpty()) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: erroresVal.mapped()
+      error: {
+        errorCode: 400,
+        errorMsg: erroresVal.mapped()
+      }
     });
   }
   next();
@@ -31,8 +33,10 @@ const checkEmailexists = async (req, res = response, next) => {
 
   if (emailExists) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "Email already exists"
+      error: {
+        errorCode: 400,
+        errorMsg: "Email already exists"
+      }
     });
   }
   next();
@@ -50,8 +54,10 @@ const checkEmailExistsPUT = async (req, res = response, next) => {
   if (emailExists) {
     if (email !== emailGet.email) {
       return res.status(400).send({
-        errorCode: 400,
-        errorMsg: "Email already exists"
+        error: {
+          errorCode: 400,
+          errorMsg: "Email already exists"
+        }
       });
     }
   }
@@ -68,8 +74,10 @@ const checkUserExists = async (req, res = response, next) => {
     next();
   }else {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This user does not exist"
+      error: {
+        errorCode: 400,
+        errorMsg: "This user does not exist"
+      }
     });
   }
 
@@ -84,8 +92,10 @@ const checkManagerExists = async (req, res = response, next) => {
     next();
   }else {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This manager does not exist"
+      error: {
+        errorCode: 400,
+        errorMsg: "This manager does not exist"
+      }
     });
   }
 
@@ -100,8 +110,10 @@ const checkClientExists = async (req, res = response, next) => {
     next();
   }else {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This client does not exist"
+      error: {
+        errorCode: 400,
+        errorMsg: "This client does not exist"
+      }
     });
   }
 
@@ -116,8 +128,10 @@ const checkTicketExists = async (req, res = response, next) => {
     next();
   }else {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This ticket already exists"
+      error: {
+        errorCode: 400,
+        errorMsg: "This ticket already exists"
+      }
     });
   }
 
@@ -134,8 +148,10 @@ const checkTicketExistsPUT = async (req, res = response, next) => {
 
     if (ticketExists.id_ticket !== ticketGet.id_ticket) {
       return res.status(400).send({
-        errorCode: 400,
-        errorMsg: "Ticket already exists"
+        error: {
+          errorCode: 400,
+          errorMsg: "Ticket already exists"
+        }
       });
     }
   }
@@ -148,8 +164,10 @@ const checkTicketExistsDELETE = async (req, res = response, next) => {
 
   if (isObjEmpty(ticketExists)) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "Ticket does not exist"
+      error: {
+        errorCode: 400,
+        errorMsg: "Ticket does not exist"
+      }
     });
   }
   next();
@@ -161,8 +179,10 @@ const checkDatesExists = async (req, res = response, next) => {
 
   if (!isObjEmpty(date)) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This Dates collection already exists"
+      error: {
+        errorCode: 400,
+        errorMsg: "This Dates collection already exists"
+      }
     });
   }
 
@@ -178,8 +198,10 @@ const checkDatesExistsPUT = async (req, res = response, next) => {
     
   if (!isObjEmpty(dateToModify) && !isObjEmpty(newDate) && dateToModify.id_fechas !== newDate.id_fechas) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This Dates collection already exists"
+      error: {
+        errorCode: 400,
+        errorMsg: "This Dates collection already exists"
+      }
     });
   }
 
@@ -192,8 +214,10 @@ const checkDateDontExist = async (req, res = response, next) => {
 
   if (isObjEmpty(date)) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This Dates body collection do not exist"
+      error: {
+        errorCode: 400,
+        errorMsg: "This Dates body collection do not exist"
+      }
     });
   }
   next();
@@ -205,8 +229,10 @@ const checkDateDontExistDELETE = async (req, res = response, next) => {
 
   if (isObjEmpty(date)) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This Dates params collection do not exist"
+      error: {
+        errorCode: 400,
+        errorMsg: "This Dates params collection do not exist"
+      }
     });
   }
   next();
@@ -219,8 +245,12 @@ const checkReportExistsPUT = async (req, res = response, next) => {
     
   if (isObjEmpty(reportToModify)) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This report do not exists"
+      error: {
+        error: {
+          errorCode: 400,
+          errorMsg: "This report do not exists"
+        }
+      } 
     });
   }
 
@@ -236,8 +266,10 @@ const checkReportTicketExists = async (req, res = response, next) => {
     
   if (!isObjEmpty(ticket) && reportToModify.id_ticket !== ticket.id_ticket) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "Cannot update id_tickets value"
+      error: {
+        errorCode: 400,
+        errorMsg: "Cannot update id_tickets value"
+      }
     });
   }
 
@@ -247,14 +279,14 @@ const checkReportTicketExists = async (req, res = response, next) => {
 const checkAllReportTicketExists = async (req, res = response, next) => {
   const { id } = req.params
   const numReports = await getNumReports(id)
-  console.log("🚀 ~ file: validar-campos.js ~ line 250 ~ checkAllReportTicketExists ~ numReports", numReports)
-  console.log("🚀 ~ file: validar-campos.js ~ line 250 ~ checkAllReportTicketExists ~ numReports", numReports)
    
     
   if (numReports <= 0) {
     return res.status(400).send({
-      errorCode: 400,
-      errorMsg: "This ticket dont have reports"
+      error: {
+        errorCode: 400,
+        errorMsg: "This ticket dont have reports"
+      }
     });
   }
 

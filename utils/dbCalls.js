@@ -34,36 +34,37 @@ const getUserData = async (id) => {
 }
 
 const getUsers = async (desde = 0, registropp = 10, typeOrder = 'name', asc='asc') => {
-  const supportedFilters = ['name', 'email', 'enabled']
+  const supportedFilters = ['name', 'email', 'enabled', 'date']
   if (!supportedFilters.includes(typeOrder)) return false
   if (typeOrder === 'name') typeOrder = 'nombre_organizacion'
-  return await pool.query(`SELECT * FROM users ORDER BY ${typeOrder} ${asc} LIMIT ? , ?`, [desde, registropp])
+  if (typeOrder === 'date') typeOrder = 'id_usuario'
+  return await pool.query(`SELECT id_usuario, nombre_organizacion, email, image, enabled, rol FROM users ORDER BY ${typeOrder} ${asc} LIMIT ? , ?`, [desde, registropp])
 }
 
 const getNumUsers = async () => {
   return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `users`'))
 }
 
-const createUser = async ({ nombre_organizacion, email, password, image }) => {
+const createUser = async ({ nombre_organizacion, email, password }) => {
   const newUser = {
     nombre_organizacion,
     email,
     password: bcrypt.hashSync(password),
-    image: image === undefined ? `${process.env.DEFAULT_PROFILE_IMAGE}` : image,
     enabled: true
   }
-  return queryResultToObject(await pool.query('INSERT INTO `users` set ?', [newUser]))
+  await pool.query('INSERT INTO `users` set ?', [newUser])
+  return getUserDataFromEmail(email)
 }
 
-const updateUser = async ({ nombre_organizacion, email, image, enabled }, id) => {
+const updateUser = async ({ nombre_organizacion, email, enabled }, id) => {
   await pool.query('UPDATE `users` SET `nombre_organizacion` = ? WHERE `users`.`id_usuario` = ?', [nombre_organizacion, id])
   await pool.query('UPDATE `users` SET `email` = ? WHERE `users`.`id_usuario` = ?', [email, id])
-  if (image && image !== undefined && image !== '') {
-    await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [image, id])
-  }else {
-    let defaultImage = `${process.env.DEFAULT_PROFILE_IMAGE}`
-    await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [defaultImage, id])
-  }
+  // if (image && image !== undefined && image !== '') {
+  //   await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [image, id])
+  // }else {
+  //   let defaultImage = `${process.env.DEFAULT_PROFILE_IMAGE}`
+  //   await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [defaultImage, id])
+  // }
   await pool.query('UPDATE `users` SET `enabled` = ? WHERE `users`.`id_usuario` = ?', [enabled, id])
 }
 
@@ -214,7 +215,6 @@ const updateTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled
 }
 
 const deleteTicketBd = async (id) => {
-console.log("🚀 ~ file: dbCalls.js ~ line 158 ~ deleteTicketBd ~ id", id)
   await pool.query('DELETE FROM `tickets` WHERE id_ticket = ?', [id])
 }
 
