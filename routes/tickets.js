@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const { Router } = require('express');
-const { getTickets, getTicket, createTicket, deleteTicket, updateTicket } = require('../controllers/tickets');
+const { getTickets, getTicket, getUserTickets, createTicket, deleteTicket, updateTicket } = require('../controllers/tickets');
 const { check } = require('express-validator')
 const { validarCampos, checkTicketExistsPUT, checkTicketExistsDELETE, checkManagerExists, checkClientExists, checkTicketExists } = require('../middleware/validar-campos')
 const { validarJWT, verifyAdminRol } = require('../middleware/validar-jwt')
@@ -22,6 +22,13 @@ router.get('/:id',[
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos
 ], getTicket);
+router.get('/user/:id', [
+  validarJWT,
+  check('id', 'El identificador no es válido').isNumeric(),
+  check('desde', 'El desde debe ser un número').optional().isNumeric(),
+  check('typeOrder', 'El desde debe ser un número').optional(),
+  check('asc', 'El desde debe ser un número').optional(),
+], getUserTickets);
 
 // POST
 router.post('/', [

@@ -2,7 +2,7 @@
 Importacion de modulos
 */
 const pool = require('../database/configdb');
-const { getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd } = require('../utils/dbCalls')
+const { getUserData, getTicketsBd, getTicketData, getUserTicketsBd, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd } = require('../utils/dbCalls')
 // GET
 const getTickets = async (req, res) => {
 
@@ -57,6 +57,50 @@ const getTicket = async (req, res) => {
     res.status(500).send({
       errorCode: 500,
       errorMsg: "Error getting ticket"
+    });
+
+  }
+
+}
+
+const getUserTickets = async (req, res) => {
+
+  try {
+
+    const desde = Number(req.query.desde) || 0;
+    const {typeOrder, asc} = req.query
+    const registropp = 10;
+    const { id } = req.params
+    const { rol } = await getUserData(id)
+
+    if (!rol){
+      return res.status(400).send({
+        errorCode: 400,
+        errorMsg: "This user does not exist"
+      });
+    }
+
+    const [tickets, total] = await Promise.all([
+      getUserTicketsBd(id, rol, desde, registropp, typeOrder, asc),
+      getNumTickets()
+    ]);
+
+    res.status(200).send({
+      ok: 200,
+      msg: 'getTickets',
+      tickets: tickets,
+      page: {
+        desde,
+        registropp,
+        total
+      }
+    });
+
+  } catch (error) {
+
+    res.status(500).send({
+      errorCode: 500,
+      errorMsg: "Error getting tickets" + error
     });
 
   }
@@ -138,4 +182,4 @@ const deleteTicket = async (req, res) => {
 
 }
 
-module.exports = { getTickets, getTicket, createTicket, deleteTicket, updateTicket }
+module.exports = { getTickets, getTicket, getUserTickets, createTicket, deleteTicket, updateTicket }

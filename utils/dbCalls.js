@@ -191,6 +191,16 @@ const getTicketsBd = async (desde = 0, registropp = 10, typeOrder = 'title', asc
   return await pool.query(`SELECT * FROM tickets ORDER BY ${typeOrder} ${asc} LIMIT ? , ?`, [desde, registropp])
 }
 
+const getUserTicketsBd = async (id, rol, desde = 0, registropp = 10, typeOrder = 'title', asc='asc') => {
+  const supportedFilters = ['title', 'priority', 'enabled', 'date']
+  if (!supportedFilters.includes(typeOrder)) return false
+  if (typeOrder === 'title') typeOrder = 'titulo'
+  else if (typeOrder === 'priority') typeOrder = 'prioridad'
+  else if (typeOrder === 'date') typeOrder = 'id_ticket'
+  if (rol === 'empresa') rol = 'responsable'
+  return await pool.query(`SELECT * FROM tickets where ${rol} = ? ORDER BY ${typeOrder} ${asc} LIMIT ? , ?`, [id, desde, registropp])
+}
+
 const getNumTickets = async () => {
   return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `tickets`'))
 }
@@ -316,4 +326,4 @@ const deleteAllReportsFromTicketBd = async (id) => {
   }
 }
 
-module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, deleteFileBd, getTicketsBd, getTicketData, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getAllReportsBd, getReportsBd, getNumReportsAll, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, getTicketsFromCustomerUser, getTicketFromRespAndCust, getTicketFromRespAndCustTit }
+module.exports = { checkEmailInBD, checkPasswordInBD, getUserDataFromEmail, getUserData, getUsers, getNumUsers, getUserData, createUser, updateUser, updatePassword, deleteUser, updateBD, deleteFileBd, getTicketsBd, getTicketData, getUserTicketsBd, getNumTickets, createTicketBd, updateTicketBd, deleteTicketBd, getDatesBd, getNumDates, getDateData, createDateBd, updateDatetBd, deleteDateBd, getAllReportsBd, getReportsBd, getNumReportsAll, getNumReports, getReportData, createReportBd, updateReportBd, deleteReportBd, deleteAllReportsFromTicketBd, getTicketsFromCustomerUser, getTicketFromRespAndCust, getTicketFromRespAndCustTit }
