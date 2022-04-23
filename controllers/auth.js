@@ -36,7 +36,8 @@ const token = async(req, res = response) => {
         email: userExists.email,
         image: userExists.image,
         enabled: userExists.enabled,
-        rol: userExists.rol
+        rol: userExists.rol,
+        id_usuario: userExists.id_usuario
       }
     });
   } catch (error) {
@@ -92,7 +93,8 @@ const login = async(req, res = response) => {
         email: userEmail,
         image,
         enabled,
-        rol
+        rol,
+        id_usuario
       }
     });
 
