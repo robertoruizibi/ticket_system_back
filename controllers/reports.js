@@ -105,10 +105,11 @@ const createReport = async (req, res) => {
 
     const data = req.body
 
-    const post = await createReportBd(data)
+    const report = await createReportBd(data)
     res.status(200).send({
       ok: 200,
-      msg: "Report created successfully"
+      msg: "Report created successfully",
+      report: report.pop()
     });
 
   } catch (error) {
@@ -130,11 +131,12 @@ const updateReport = async (req, res) => {
     const { id } = req.params
     const data = req.body
 
-    await updateReportBd(data, id)
+    const report = await updateReportBd(data, id)
 
     res.status(200).send({
       ok: 200,
-      msg: "Report updated successfully"
+      msg: "Report updated successfully",
+      report: report[0]
     });
 
   } catch (error) {
@@ -182,7 +184,9 @@ const deleteReport = async (req, res) => {
     const { id } = req.params
 
     const reports = await getReportData(id)
-    await deleteFileBd(reports.archivo_adjunto, process.env.PROFILE_REPORT_TYPE, id)
+    if (reports.archivo_adjunto !== '') {
+      await deleteFileBd(reports.archivo_adjunto, process.env.PROFILE_REPORT_TYPE, id)
+    }
 
     await deleteReportBd(id)
 

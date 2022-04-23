@@ -33,7 +33,7 @@ const getUserData = async (id) => {
   return queryResultToObject(await pool.query('SELECT * FROM `users` WHERE id_usuario = ?', [id]))
 }
 
-const getUsers = async (desde = 0, registropp = 10, typeOrder = 'name', asc='asc') => {
+const getUsers = async (desde = 0, registropp = 10, typeOrder = 'date', asc='asc') => {
   const supportedFilters = ['name', 'email', 'enabled', 'date']
   if (!supportedFilters.includes(typeOrder)) return false
   if (typeOrder === 'name') typeOrder = 'nombre_organizacion'
@@ -182,7 +182,7 @@ const getTicketsFromCustomerUser = async (id) => {
   return await pool.query('SELECT * FROM `tickets` WHERE cliente = ?', [id])
 }
 
-const getTicketsBd = async (desde = 0, registropp = 10, typeOrder = 'title', asc='asc') => {
+const getTicketsBd = async (desde = 0, registropp = 10, typeOrder = 'date', asc='asc') => {
   const supportedFilters = ['title', 'priority', 'enabled', 'date']
   if (!supportedFilters.includes(typeOrder)) return false
   if (typeOrder === 'title') typeOrder = 'titulo'
@@ -213,7 +213,8 @@ const createTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled
     titulo,
     enabled
   }
-  return queryResultToObject(await pool.query('INSERT INTO `tickets` set ?', [newTicket]))
+  await pool.query('INSERT INTO `tickets` set ?', [newTicket])
+  return getTicketFromRespAndCustTit(responsable, cliente, titulo)
 }
 
 const updateTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled }, id) => {
@@ -284,6 +285,14 @@ const getAllReportsBd = async (desde = 0, registropp = 10) => {
   return await pool.query('SELECT * FROM `reports` LIMIT ? , ?', [desde, registropp])
 }
 
+const getTicketReports = async (id_ticket) => {
+  return await pool.query('SELECT * FROM `reports` WHERE id_ticket = ?', [id_ticket])
+}
+
+const getReportByContenidoAndTicket = async (contenido, id_ticket) => {
+  return await pool.query('SELECT * FROM `reports` WHERE id_ticket = ? AND contenido = ?', [id_ticket, contenido])
+}
+
 const getReportsBd = async (id, desde = 0, registropp = 10) => {
   return await pool.query('SELECT * FROM `reports` WHERE id_ticket = ? LIMIT ? , ?', [id, desde, registropp])
 }
@@ -296,15 +305,15 @@ const getNumReports = async (id) => {
   return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `reports` where id_ticket = ?', [id]))
 }
 
-const createReportBd = async ({ contenido, fecha_creacion, archivo_adjunto, visto, id_ticket}) => {
+const createReportBd = async ({ contenido, fecha_creacion, visto, id_ticket}) => {
   const newReport = {
     contenido,
     fecha_creacion,
-    archivo_adjunto,
     visto,
     id_ticket,
   }
-  return queryResultToObject(await pool.query('INSERT INTO `reports` set ?', [newReport]))
+  await pool.query('INSERT INTO `reports` set ?', [newReport])
+  return getTicketReports(id_ticket)
 }
 
 const updateReportBd = async ({ contenido, fecha_creacion, archivo_adjunto, visto, id_ticket}, id) => {
@@ -313,6 +322,7 @@ const updateReportBd = async ({ contenido, fecha_creacion, archivo_adjunto, vist
   await pool.query('UPDATE `reports` SET `archivo_adjunto` = ? WHERE `reports`.`id_reporte` = ?', [archivo_adjunto, id])
   await pool.query('UPDATE `reports` SET `visto` = ? WHERE `reports`.`id_reporte` = ?', [visto, id])
   await pool.query('UPDATE `reports` SET `id_ticket` = ? WHERE `reports`.`id_reporte` = ?', [id_ticket, id])
+  return getReportByContenidoAndTicket(contenido, id_ticket)
 }
 
 const deleteReportBd = async (id) => {

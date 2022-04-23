@@ -114,10 +114,11 @@ const createTicket = async (req, res) => {
 
     const data = req.body
 
-    const post = await createTicketBd(data)
+    const ticket = await createTicketBd(data)
     res.status(200).send({
       ok: 200,
-      msg: "Ticket created successfully"
+      msg: "Ticket created successfully",
+      ticket
     });
 
   } catch (error) {
