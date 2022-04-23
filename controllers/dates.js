@@ -3,6 +3,7 @@ Importacion de modulos
 */
 const pool = require('../database/configdb');
 const { getDatesBd, getNumDates, getDateData, createDateBd, deleteDateBd, updateDatetBd } = require('../utils/dbCalls')
+const { isObjEmpty } = require('../utils/common')
 
 // GET
 const getDates = async (req, res) => {
@@ -44,6 +45,13 @@ const getDate = async (req, res) => {
 
     const { id } = req.params
     const date = await getDateData(id)
+
+    if (isObjEmpty(date)) {
+      return res.status(400).send({
+        errorCode: 400,
+        errorMsg: "This ticket does not exist"
+      });
+    }
 
     res.status(200).send({
       ok: 200,
