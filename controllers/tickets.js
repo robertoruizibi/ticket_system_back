@@ -80,7 +80,8 @@ const getUserTickets = async (req, res) => {
       });
     }
 
-    const [tickets, total] = await Promise.all([
+    const [allTickets, tickets, total] = await Promise.all([
+      getUserTicketsBd(id, rol, desde, 9999, typeOrder, asc),
       getUserTicketsBd(id, rol, desde, registropp, typeOrder, asc),
       getNumTickets()
     ]);
@@ -89,6 +90,7 @@ const getUserTickets = async (req, res) => {
       ok: 200,
       msg: 'getTickets',
       tickets: tickets,
+      allTickets: allTickets,
       page: {
         desde,
         registropp,
