@@ -12,8 +12,9 @@ const getUsuarios = async (req, res) => {
 
     const desde = Number(req.query.desde) || 0;
     const {typeOrder, asc} = req.query
-    const registropp = 99;
-    const [usuarios, total] = await Promise.all([
+    const registropp = 10;
+    const [allUsers, usuarios, total] = await Promise.all([
+      getUsers(desde, 9999, typeOrder, asc),
       getUsers(desde, registropp, typeOrder, asc),
       getNumUsers()
     ]);
@@ -29,6 +30,7 @@ const getUsuarios = async (req, res) => {
       ok: 200,
       msg: 'getUsuarios',
       usuarios: usuarios,
+      allUsers: allUsers,
       page: {
         desde,
         registropp,
