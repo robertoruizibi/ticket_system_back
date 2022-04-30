@@ -28,6 +28,7 @@ const validarJWT = (req, res, next) => {
 const verifyAdminRol = async (req, res, next) => {
 
   const token = req.headers['x-auth'];
+  let paramId = req.params.id
 
   try {
     
@@ -40,7 +41,7 @@ const verifyAdminRol = async (req, res, next) => {
       });
     } 
 
-    if (userExists.rol !== 'empresa') {
+    if (userExists.rol !== 'empresa' && userExists.id_usuario.toString() !== paramId) {
       return res.status(401).send({
         errorCode: 401,
         errorMsg: 'You do not have the required permissions' 
