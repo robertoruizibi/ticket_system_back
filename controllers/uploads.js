@@ -70,7 +70,7 @@ const subirArchivo = async (req, res) => {
 
     const archivosVarios = {
       fotoPerfil: ['jpeg', 'jpg', 'png'],
-      ficheroReporte: ['doc', 'docx', 'xls', 'pdf', 'zip', 'jpeg', 'jpg', 'png']
+      ficheroReporte: ['doc', 'docx', 'xls','xlsx', 'rar',  'pdf', 'zip', 'jpeg', 'jpg', 'png']
     }
 
     const archivo = req.files.archivo
