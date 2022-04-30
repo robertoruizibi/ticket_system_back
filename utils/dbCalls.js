@@ -319,7 +319,6 @@ const createReportBd = async ({ contenido, fecha_creacion, visto, id_ticket}) =>
 const updateReportBd = async ({ contenido, fecha_creacion, archivo_adjunto, visto, id_ticket}, id) => {
   await pool.query('UPDATE `reports` SET `contenido` = ? WHERE `reports`.`id_reporte` = ?', [contenido, id])
   await pool.query('UPDATE `reports` SET `fecha_creacion` = ? WHERE `reports`.`id_reporte` = ?', [fecha_creacion, id])
-  await pool.query('UPDATE `reports` SET `archivo_adjunto` = ? WHERE `reports`.`id_reporte` = ?', [archivo_adjunto, id])
   await pool.query('UPDATE `reports` SET `visto` = ? WHERE `reports`.`id_reporte` = ?', [visto, id])
   await pool.query('UPDATE `reports` SET `id_ticket` = ? WHERE `reports`.`id_reporte` = ?', [id_ticket, id])
   return getReportByContenidoAndTicket(contenido, id_ticket)
