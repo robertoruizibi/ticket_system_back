@@ -32,24 +32,26 @@ router.get('/report/:id',[
 // POST
 router.post('/', [
   validarJWT,
-  verifyAdminRol,
   check('contenido', 'El argumento contenido es obligatorio').not().isEmpty(),
   check('fecha_creacion', 'El argumento fecha_creacion es obligatorio').not().isEmpty(),
   check('archivo_adjunto', 'El argumento archivo_adjunto es obligatorio').optional(),
   check('visto', 'El argumento visto es obligatorio').not().isEmpty(),
   check('id_ticket', 'El argumento id_ticket es obligatorio').not().isEmpty().isNumeric(),
+  check('creador', 'El argumento creador es obligatorio').not().isEmpty().isNumeric(),
+  check('nombre_creador', 'El argumento nombre_creador es obligatorio').not().isEmpty(),
   validarCampos
 ], createReport);
 
 // // PUT
 router.put('/:id', [
   validarJWT,
-  verifyAdminRol,
   check('contenido', 'El argumento contenido es obligatorio').not().isEmpty(),
   check('fecha_creacion', 'El argumento fecha_creacion es obligatorio').not().isEmpty(),
   check('archivo_adjunto', 'El argumento archivo_adjunto es obligatorio').optional(),
   check('visto', 'El argumento visto es obligatorio').not().isEmpty(),
   check('id_ticket', 'El argumento id_ticket es obligatorio').not().isEmpty().isNumeric(),
+  check('creador', 'El argumento creador es obligatorio').not().isEmpty().isNumeric(),
+  check('nombre_creador', 'El argumento nombre_creador es obligatorio').not().isEmpty(),
   check('id', 'El identificador no es válido').isNumeric(),
   validarCampos,
   checkReportExistsPUT,
