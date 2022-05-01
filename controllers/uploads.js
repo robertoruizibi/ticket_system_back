@@ -175,7 +175,10 @@ const deleteFile = async (req, res) => {
       });
     }
 
-    fs.unlinkSync(uploadPath)
+    if (fileName !== DEFAULT_PROFILE_IMAGE) {
+      fs.unlinkSync(uploadPath)
+    }
+
 
     res.status(200).send({
       ok: 200,
