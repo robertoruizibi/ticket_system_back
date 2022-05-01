@@ -147,19 +147,20 @@ const deleteFileBd = async (file, type, id) => {
     return false
   }
 
-  fs.unlinkSync(uploadPath)
+  if (file !== process.env.DEFAULT_PROFILE_IMAGE) {
+    fs.unlinkSync(uploadPath)
+    switch (type) {
+      case process.env.PROFILE_PHOTO_TYPE:
+        await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [process.env.DEFAULT_PROFILE_IMAGE, id])
+        break;
 
-  switch (type) {
-    case process.env.PROFILE_PHOTO_TYPE:
-      await pool.query('UPDATE `users` SET `image` = ? WHERE `users`.`id_usuario` = ?', [process.env.DEFAULT_PROFILE_IMAGE, id])
-      break;
-
-    case process.env.PROFILE_REPORT_TYPE:
-      await pool.query('UPDATE `reports` SET `archivo_adjunto` = ? WHERE `reports`.`id_reporte` = ?', ['', id])
-      break;
-  
-    default:
-      break;
+      case process.env.PROFILE_REPORT_TYPE:
+        await pool.query('UPDATE `reports` SET `archivo_adjunto` = ? WHERE `reports`.`id_reporte` = ?', ['', id])
+        break;
+    
+      default:
+        break;
+    }
   }
 }
 
@@ -205,10 +206,11 @@ const getNumTickets = async () => {
   return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `tickets`'))
 }
 
-const createTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled }) => {
+const createTicketBd = async ({ prioridad, responsable, nombre_responsable, cliente, titulo, enabled }) => {
   const newTicket = {
     prioridad,
     responsable,
+    nombre_responsable,
     cliente,
     titulo,
     enabled
@@ -217,9 +219,10 @@ const createTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled
   return getTicketFromRespAndCustTit(responsable, cliente, titulo)
 }
 
-const updateTicketBd = async ({ prioridad, responsable, cliente, titulo, enabled }, id) => {
+const updateTicketBd = async ({ prioridad, responsable, nombre_responsable, cliente, titulo, enabled }, id) => {
   await pool.query('UPDATE `tickets` SET `prioridad` = ? WHERE `tickets`.`id_ticket` = ?', [prioridad, id])
   await pool.query('UPDATE `tickets` SET `responsable` = ? WHERE `tickets`.`id_ticket` = ?', [responsable, id])
+  await pool.query('UPDATE `tickets` SET `nombre_responsable` = ? WHERE `tickets`.`id_ticket` = ?', [nombre_responsable, id])
   await pool.query('UPDATE `tickets` SET `cliente` = ? WHERE `tickets`.`id_ticket` = ?', [cliente, id])
   await pool.query('UPDATE `tickets` SET `titulo` = ? WHERE `tickets`.`id_ticket` = ?', [titulo, id])
   await pool.query('UPDATE `tickets` SET `enabled` = ? WHERE `tickets`.`id_ticket` = ?', [enabled, id])
@@ -305,22 +308,26 @@ const getNumReports = async (id) => {
   return getFirstQueryValue(await pool.query('SELECT COUNT(*) FROM `reports` where id_ticket = ?', [id]))
 }
 
-const createReportBd = async ({ contenido, fecha_creacion, visto, id_ticket}) => {
+const createReportBd = async ({ contenido, fecha_creacion, visto, id_ticket, creador, nombre_creador}) => {
   const newReport = {
     contenido,
     fecha_creacion,
     visto,
     id_ticket,
+    creador,
+    nombre_creador
   }
   await pool.query('INSERT INTO `reports` set ?', [newReport])
   return getTicketReports(id_ticket)
 }
 
-const updateReportBd = async ({ contenido, fecha_creacion, archivo_adjunto, visto, id_ticket}, id) => {
+const updateReportBd = async ({ contenido, fecha_creacion, visto, id_ticket, creador, nombre_creador}, id) => {
   await pool.query('UPDATE `reports` SET `contenido` = ? WHERE `reports`.`id_reporte` = ?', [contenido, id])
   await pool.query('UPDATE `reports` SET `fecha_creacion` = ? WHERE `reports`.`id_reporte` = ?', [fecha_creacion, id])
   await pool.query('UPDATE `reports` SET `visto` = ? WHERE `reports`.`id_reporte` = ?', [visto, id])
   await pool.query('UPDATE `reports` SET `id_ticket` = ? WHERE `reports`.`id_reporte` = ?', [id_ticket, id])
+  await pool.query('UPDATE `reports` SET `creador` = ? WHERE `reports`.`id_reporte` = ?', [creador, id])
+  await pool.query('UPDATE `reports` SET `nombre_creador` = ? WHERE `reports`.`id_reporte` = ?', [nombre_creador, id])
   return getReportByContenidoAndTicket(contenido, id_ticket)
 }
 
